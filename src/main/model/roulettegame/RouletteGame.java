@@ -1,4 +1,4 @@
 package model.roulettegame;
 
-public class RouletteBall {
+public class RouletteGame {
 }

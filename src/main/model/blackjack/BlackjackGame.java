@@ -17,10 +17,11 @@ public class BlackjackGame {
 
     }
 
+    // REQUIRES: betSize > 0
     // MODIFIES: this, BlackJackRound
     // EFFECTS: if the player has enough money to play the selected bet size for the round
     // passes the dealerDecks as an argument create a BlackJackRound instance
-    public void playARound() {
+    public void playARound(int betSize) {
 
     }
 
@@ -33,4 +34,6 @@ public class BlackjackGame {
     public int getBetSize() {
         return 0;
     }
+
+
 }
