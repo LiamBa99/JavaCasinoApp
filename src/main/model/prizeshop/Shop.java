@@ -1,12 +1,14 @@
 package model.prizeshop;
 
 import java.util.*;
+import model.casino.Casino;
+import model.inventory.Inventory;
 
 
 // represents a shop of prizes that allows the player to buy based on their current funds
 public class Shop {
     List<Prize> prizeList; // represents the list of prizes available for purchase
-    int playerFunds; // represents the amount of money the user has to purchase prizes
+    Casino casino; // represents the casino the player is currently playing at
 
     // EFFECTS: constructs a shop of prizes, setting playerFunds to equal the user's casino balance
     public Shop(int playerFunds) {
@@ -39,6 +41,15 @@ public class Shop {
     // returns false if the user does not have enough balance to purchase
     // returns true if the user successfully purchases the prize
     public boolean buyPrize(int index) {
+        return false;
+    }
+
+
+    // REQUIRES: prize is not null
+    // MODIFIES: casino, inventory
+    // EFFECTS: removes the prize from the inventory, sells the prize according to 60% of its value
+    // adds the sell value to the players current balance
+    public boolean sellPrize(Prize prize) {
         return false;
     }
 }

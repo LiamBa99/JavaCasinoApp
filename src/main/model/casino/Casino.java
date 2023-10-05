@@ -18,4 +18,9 @@ public class Casino {
     public void getGameSelection() {
 
     }
+
+    // EFFECTS: saves the player's current casino session including balance and inventory
+    public void saveCasinoSession() {
+
+    }
 }
