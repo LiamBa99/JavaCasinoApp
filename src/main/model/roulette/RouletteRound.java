@@ -1,6 +1,4 @@
-package model.roulettegame;
-
-import java.util.*;
+package model.roulette;
 
 // represents a round of Roulette, with the player bets, player selections and a roulette board where
 // numbers 00 and 0 have the colour green associated

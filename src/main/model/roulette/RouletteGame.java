@@ -1,4 +1,4 @@
-package model.roulettegame;
+package model.roulette;
 
 import model.casino.Casino;
 import java.util.*;

@@ -13,14 +13,23 @@ public class Casino {
 
     }
 
-    // EFFECTS: ask the user for their game selection and return the selection
-    // TODO either return the game type or return an int and call the game type based on int in main
-    public void getGameSelection() {
+    // EFFECTS: saves the player's current casino session including balance and inventory
+    public void saveCasinoSession() {
 
     }
 
-    // EFFECTS: saves the player's current casino session including balance and inventory
-    public void saveCasinoSession() {
+    // EFFECTS: returns the player's current balance
+    public int getPlayerBalance() {
+        return 0;
+    }
+
+    // EFFECTS: adds value to the player's current balance
+    public void addPlayerBalance() {
+
+    }
+
+    // EFFECTS: deducts value from the player's current balance
+    public void deductPlayerBalance() {
 
     }
 }

@@ -1,4 +1,4 @@
-package model.slotgame;
+package model.slot;
 
 // represents a game of a slot machine
 public class SlotGame {

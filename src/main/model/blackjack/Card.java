@@ -1,8 +1,11 @@
 package model.blackjack;
 
+import java.io.*;
+
 // represents a playing card that excludes jokers, having a value 1 - 13 and a suit.
 // colour of the card is derived from the suit
 public class Card {
+    private String unicodeCardValue; // represents the printable symbol for the card
     private int cardValue; // tracks the value of the card
     private String suit; // tracks the suit of the card
 
