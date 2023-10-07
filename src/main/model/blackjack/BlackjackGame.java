@@ -60,6 +60,7 @@ public class BlackjackGame {
     }
 
     // REQUIRES: newBet > 0
+    // MODIFIES: this
     // EFFECTS: sets the players new current bet
     public void setCurrentBet(int newBet) {
 

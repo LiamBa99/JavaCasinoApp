@@ -6,10 +6,10 @@ import java.util.*;
 public class Prize {
     int value;
     String animalType;
-    List<Integer> colour;
+    int[] colour;
 
     // EFFECTS: constructs a prize according to its inputted value, animalType and RGB colour
-    public Prize(int value, String animalType, List<Integer> colour) {
+    public Prize(int value, String animalType, int[] colour) {
 
     }
 }
