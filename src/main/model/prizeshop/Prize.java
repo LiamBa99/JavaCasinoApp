@@ -12,4 +12,19 @@ public class Prize {
     public Prize(int value, String animalType, int[] colour) {
 
     }
+
+    // EFFECTS: returns the value of the prize
+    public int getValue() {
+        return 0;
+    }
+
+    // EFFECTS: returns the animal type
+    public String getAnimalType() {
+        return null;
+    }
+
+    // EFFECTS: returns the colour of the animal
+    public int[] getColour() {
+        return null;
+    }
 }
