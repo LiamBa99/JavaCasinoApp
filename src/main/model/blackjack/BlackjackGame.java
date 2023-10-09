@@ -1,12 +1,12 @@
 package model.blackjack;
 
+import model.CasinoGame;
 import model.casino.*;
 import java.util.*;
 
 // represents a game of blackjack with a variable amount of card decks
-public class BlackjackGame {
+public class BlackjackGame implements CasinoGame {
     private List<Card> dealerDecks; // represents the variable amount of card decks the dealer randomly gets from
-    private int numOfPlayers; // represents the amount of players playing blackjack
     private Casino casino; // represents the casino the player is currently playing at
     private int currentBet;
     private int numOfDecks;
@@ -16,7 +16,7 @@ public class BlackjackGame {
     // creates a number of card decks according to numOfDecks and adds them to the dealerDeck
     // sets number of players to numOfPlayers
     // sets casino to casino
-    public BlackjackGame(int numOfDecks, int numOfPlayers, Casino casino) {
+    public BlackjackGame(int numOfDecks, Casino casino) {
 
     }
 

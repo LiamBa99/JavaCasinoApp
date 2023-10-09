@@ -1,11 +1,13 @@
 package model.roulette;
 
+import model.CasinoGame;
+
 // represents a round of Roulette, with the player bets, player selections and a roulette board where
 // numbers 00 and 0 have the colour green associated
 // 00 is represented by the first 0 in the array
 // even numbers have the colour red associated
 // ood numbers have the colour black associated
-public class RouletteRound {
+public class RouletteRound implements CasinoGame {
     private int[] playerSelection;
     private String[] playerColourEvenSelection;
     private int playerBet;

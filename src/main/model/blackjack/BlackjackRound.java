@@ -1,8 +1,12 @@
 package model.blackjack;
 
+import java.util.*;
+
 public class BlackjackRound {
 
     private boolean win; // represents whether the player has won the round
+    private List<Card> playerHand;
+    private List<Card> dealerHand;
     private int playerCardValue;
     private int dealerCardValue;
 
@@ -19,8 +23,18 @@ public class BlackjackRound {
     }
 
 
+    // EFFECTS: deals out the first round of cards
+    public void dealFirstCards() {
+
+    }
+
     // EFFECTS: prints the card randomly removed from the dealer list either on the dealer side or the player side
-    public void showACard(boolean dealer) {
+    public void showNextCard(boolean dealer) {
+
+    }
+
+    // EFFECTS: deals cards to the dealer until they are at a hard 17 or bust
+    public void dealUntilComplete() {
 
     }
 
@@ -30,9 +44,23 @@ public class BlackjackRound {
 
     }
 
-    // EFFECTS: asks the user if they would like to hit, stand, split, or double.
-    // return 0,1,2,3 respectively according to the user choice
-    public int getUserChoice() {
+    // EFFECTS: returns the player's current hand of cards
+    public List<Card> getPlayerHand() {
+        return null;
+    }
+
+    // EFFECTS: returns the player's current hand of cards
+    public List<Card> getDealerHand() {
+        return null;
+    }
+
+    // EFFECTS: returns the player's current card value
+    public int getPlayerCardValue() {
+        return 0;
+    }
+
+    // EFFECTS: returns the dealer's current card value
+    public int getDealerCardValue() {
         return 0;
     }
 }

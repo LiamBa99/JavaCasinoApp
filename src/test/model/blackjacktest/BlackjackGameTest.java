@@ -18,8 +18,8 @@ class BlackjackGameTest {
     @BeforeEach
     void runBefore() {
         casinoTest = new Casino(1000);
-        blackjackTestGame = new BlackjackGame(4, 1, casinoTest);
-        blackjackTestGame2 = new BlackjackGame(0,0,casinoTest);
+        blackjackTestGame = new BlackjackGame(4, casinoTest);
+        blackjackTestGame2 = new BlackjackGame(0,casinoTest);
         testCardDeck = new CardDeck();
     }
 
