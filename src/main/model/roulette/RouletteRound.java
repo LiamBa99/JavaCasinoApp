@@ -44,7 +44,7 @@ public class RouletteRound implements CasinoGame {
 
         if (isRed && playerColourEvenSelection.contains("red")) {
             win += 1;
-        } else if (playerColourEvenSelection.contains("black")) {
+        } else if (!isRed && playerColourEvenSelection.contains("black")) {
             win += 1;
         }
 

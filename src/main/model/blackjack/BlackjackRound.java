@@ -12,6 +12,8 @@ public class BlackjackRound {
 
     // EFFECTS: constructs a round of blackjack with player and dealer card value set to 0
     public BlackjackRound(BlackjackGame blackjack) {
+        playerHand = new ArrayList<>();
+        dealerHand = new ArrayList<>();
         this.blackjack = blackjack;
         playerCardValue = 0;
         dealerCardValue = 0;
@@ -35,17 +37,10 @@ public class BlackjackRound {
 
     // EFFECTS: deals out the first round of cards
     public void dealFirstCards() {
-        Card cardToAdd = dealACard(false);
-        playerHand.add(cardToAdd);
-        playerCardValue += cardToAdd.getCardValue();
+        dealACard(false);
+        dealACard(true);
+        dealACard(false);
 
-        cardToAdd = dealACard(true);
-        dealerHand.add(cardToAdd);
-        dealerCardValue += cardToAdd.getCardValue();
-
-        cardToAdd = dealACard(false);
-        playerHand.add(cardToAdd);
-        playerCardValue += cardToAdd.getCardValue();
     }
 
     // EFFECTS: deals cards to the dealer until they are at a hard 17 or bust
@@ -57,19 +52,21 @@ public class BlackjackRound {
         }
     }
 
-    // MODIFIES: this
-    // EFFECTS: sets this.win to true if the user won the round, false if the dealer won
+
+    // EFFECTS: returns true if the user won the round, false if the dealer won
     public boolean checkWin() {
+        boolean win = false;
+
         if (dealerCardValue > 21) {
-            return true;
+            win = true;
         } else if (playerCardValue > dealerCardValue && playerCardValue < 21) {
-            return true;
+            win = true;
         } else if (dealerCardValue > playerCardValue && dealerCardValue < 21) {
-            return false;
+            win = false;
         } else if (playerCardValue > 21) {
-            return false;
+            win = false;
         }
-        return false;
+        return win;
     }
 
     // EFFECTS: returns the player's current hand of cards
@@ -87,4 +84,15 @@ public class BlackjackRound {
         return playerCardValue;
     }
 
+    // EFFECTS: returns the dealer's current card value
+    public int getDealerCardValue() {
+        return dealerCardValue;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets the card values of the dealer and player
+    public void setCardValues(int dealer, int player) {
+        dealerCardValue = dealer;
+        playerCardValue = player;
+    }
 }

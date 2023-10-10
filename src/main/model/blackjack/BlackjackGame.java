@@ -25,7 +25,7 @@ public class BlackjackGame implements CasinoGame {
                 dealerDecks.add(cards.getCardDeck().get(j));
             }
         }
-
+        this.numOfCards = 52 * numOfDecks;
         this.casino = casino;
     }
 
@@ -38,7 +38,7 @@ public class BlackjackGame implements CasinoGame {
 
     // EFFECTS: checks if the player has enough money to play the round
     public boolean checkEnoughMoney(int attemptedBet) {
-        return (attemptedBet > casino.getPlayerBalance());
+        return (casino.getPlayerBalance() > attemptedBet);
     }
 
     // EFFECTS: returns the list of cards in the dealer's deck
@@ -49,7 +49,8 @@ public class BlackjackGame implements CasinoGame {
     // EFFECTS: returns and removes a random card in the dealer's deck
     public Card removeRandomCard() {
         Random random = new Random();
-        Card returnCard = dealerDecks.remove(random.nextInt(numOfCards));
+        int randomIndex = random.nextInt(numOfCards);
+        Card returnCard = dealerDecks.remove(randomIndex);
         this.numOfCards--;
         return returnCard;
     }

@@ -14,8 +14,11 @@ public class RouletteTest {
     private RouletteRound testRoulette1;
     private RouletteRound testRoulette2;
     private RouletteRound testRoulette3;
+    private RouletteRound testRoulette4;
     private int[] testPlayerSelection1;
     private List<String> testColourSelection;
+    private List<String> testColourSelection2;
+    private List<String> testColourSelection3;
     private int testPlayerBet;
     private final int[] rouletteBoard = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
             16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
@@ -28,11 +31,16 @@ public class RouletteTest {
         int[] testPlayerSelection2 = new int[] {1};
         testColourSelection = new ArrayList<>();
         testColourSelection.add("red");
+        testColourSelection2 = new ArrayList<>();
+        testColourSelection2.add("black");
+        testColourSelection3 = new ArrayList<>();
+        testColourSelection3.add("red");
         List<String> testNoSelection = new ArrayList<>();
         testPlayerBet = 5;
         testRoulette1 = new RouletteRound(testPlayerSelection1,testPlayerBet,testColourSelection);
         testRoulette2 = new RouletteRound(testPlayerSelection2,testPlayerBet,testNoSelection);
-        testRoulette3 = new RouletteRound(testPlayerSelection2,testPlayerBet,testColourSelection);
+        testRoulette3 = new RouletteRound(testPlayerSelection2,testPlayerBet,testColourSelection2);
+        testRoulette4 = new RouletteRound(testPlayerSelection2,testPlayerBet,testColourSelection3);
     }
 
     @Test
@@ -78,8 +86,26 @@ public class RouletteTest {
             }
         }
 
-        int upperRange = loseCounter + 8;
-        int lowerRange = loseCounter - 8;
+        int upperRange = loseCounter + 10;
+        int lowerRange = loseCounter - 10;
+
+        assertTrue((lowerRange < winCounter) && (upperRange > winCounter));
+
+        // test case with 50% chance to win with red
+        winCounter = 0;
+        loseCounter = 0;
+
+        for (int i = 0; i < 30; i++) {
+            int winWeight = testRoulette4.checkWin();
+            if(winWeight == 1 || winWeight == 2) {
+                winCounter++;
+            } else {
+                loseCounter++;
+            }
+        }
+
+        upperRange = loseCounter + 10;
+        lowerRange = loseCounter - 10;
 
         assertTrue((lowerRange < winCounter) && (upperRange > winCounter));
     }

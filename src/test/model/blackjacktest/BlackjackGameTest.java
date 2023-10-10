@@ -58,6 +58,14 @@ class BlackjackGameTest {
             assertEquals(blackjackTestGame3.getDealerDecks().get(i).getCardValue(),
                     testCardDeck.getCardDeck().get(i).getCardValue());
         }
+
+        // multiple deck case
+        for (int i = 0; i < blackjackTestGame.getNumOfDecks(); i++) {
+            for (int j = 0; j < testCardDeck.getCardDeck().size(); j++) {
+                assertEquals(blackjackTestGame.getDealerDecks().get(j + (13 * i)).getCardValue()
+                        ,testCardDeck.getCardDeck().get(j).getCardValue());
+            }
+        }
     }
 
     @Test
