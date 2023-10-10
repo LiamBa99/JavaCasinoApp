@@ -13,18 +13,24 @@ public class CasinoApp {
     private CasinoGame currentGame;
     private Casino currentCasino;
     private Scanner input;
+    private boolean keepGoing;
 
 
     // EFFECTS: constructs the Casino console interface
     public CasinoApp() {
         currentCasino = new Casino(0);
         currentGame = null;
+        input = new Scanner(System.in);
+        keepGoing = true;
+        runCasinoApp();
     }
 
     // MODIFIES: this
     // EFFECTS: runs the casino app and interacts with the user
     public void runCasinoApp() {
-
+        while (keepGoing) {
+            displayWelcome();
+        }
     }
 
     // EFFECTS: shows the user the welcome page
@@ -57,6 +63,9 @@ public class CasinoApp {
             playBlackJack();
         } else if (command.equals("r")) {
             playRoulette();
+        } else if (command.equals("q")) {
+            quitCasino();
+            displayWelcome();
         }
     }
 
@@ -102,16 +111,17 @@ public class CasinoApp {
     }
 
     public void playBlackJack() {
-        boolean keepPlaying = false;
+        boolean keepPlaying = true;
         BlackjackGame playBlackJack;
 
         System.out.println("Welcome to the BlackJack table!"
-                + "You want to get as close to 21 as possible without going over.");
+                + " You want to get as close to 21 as possible without going over.");
         System.out.println("How many decks would you like to play with? The maximum is 4: ");
 
         int deckAmount = input.nextInt();
-        if (deckAmount < 0) {
+        while (deckAmount < 0 || deckAmount > 4) {
             System.out.println("You must enter a number greater than 0 and less than 5. Try again.");
+            deckAmount = input.nextInt();
         }
 
         playBlackJack = new BlackjackGame(deckAmount,currentCasino);
@@ -133,11 +143,13 @@ public class CasinoApp {
         System.out.println("How much would you like to bet?");
 
         int betAmount = input.nextInt();
-        if (betAmount < 0 || !blackjack.checkEnoughMoney(betAmount)) {
-            System.out.println("You must enter a non-negative number!. Try again.");
-        } else {
-            blackjack.setCurrentBet(betAmount);
+        while (betAmount < 0 || !blackjack.checkEnoughMoney(betAmount)) {
+            System.out.println("You must enter a non-negative number that is within your balance!. Try again.");
+            betAmount = input.nextInt();
         }
+
+        blackjack.setCurrentBet(betAmount);
+
 
         System.out.println("Here comes the first cards");
 
@@ -150,14 +162,15 @@ public class CasinoApp {
         if (!isBlackjack(currentRound)) {
             boolean standing = false;
             while (!standing) {
-                System.out.println("You have " + currentRound.getPlayerCardValue() + "Would you like to hit or stand?");
+                System.out.println("You have " + currentRound.getPlayerCardValue()
+                        + " Would you like to hit or stand?");
                 System.out.println("Press h to hit and s to stand");
 
                 String command = input.next().toLowerCase();
 
                 if (command.equals("h")) {
                     while (!standing) {
-                        blackjack.removeRandomCard();
+                        currentRound.dealACard(false);
                         showCurrentCards(currentRound);
                         if (currentRound.getPlayerCardValue() > 21) {
                             System.out.println("Oops! You busted");
@@ -168,7 +181,7 @@ public class CasinoApp {
                         } else {
                             System.out.println("Hit again? Press h to hit or s to stand");
                             command = input.next().toLowerCase();
-                            if (command == "s") {
+                            if (command.equals("s")) {
                                 standing = true;
                             }
                         }
@@ -178,12 +191,11 @@ public class CasinoApp {
                     currentRound.dealUntilComplete();
                 }
             }
-        } else {
-            System.out.println("You hit blackjack!");
-            currentCasino.addPlayerBalance(2 * betAmount);
         }
 
         showCurrentCards(currentRound);
+        System.out.println("The dealer ended up with: " + currentRound.getDealerCardValue());
+        System.out.println("You ended up with: " + currentRound.getPlayerCardValue());
 
         // check if they won
         if (currentRound.checkWin()) {
@@ -197,9 +209,9 @@ public class CasinoApp {
         System.out.println("Do you want to play again? y for yes or n for no");
         String command = input.next().toLowerCase();
 
-        if (command == "y") {
+        if (command.equals("y")) {
             playAgain = true;
-        } else if (command == "n") {
+        } else if (command.equals("n")) {
             playAgain = false;
         } else {
             System.out.println("That was not a valid response, try again!");
@@ -218,12 +230,10 @@ public class CasinoApp {
 
     }
 
-    public boolean getCommand() {
-        return false;
-    }
-
+    // MODIFIES: this
+    // EFFECTS: sets keepGoing to false
     public void quitCasino() {
-
+        keepGoing = false;
     }
 
     // EFFECTS: checks if the player received blackjack
@@ -237,12 +247,12 @@ public class CasinoApp {
     public void showCurrentCards(BlackjackRound currentRound) {
         System.out.println("Dealer's cards are: ");
         for (Card card : currentRound.getDealerHand()) {
-            System.out.println(card.getCardValue() + "of " + card.getSuit());
+            System.out.println(card.getCardValue() + " of " + card.getSuit());
         }
 
         System.out.println("Your cards are: ");
         for (Card card : currentRound.getPlayerHand()) {
-            System.out.println(card.getCardValue() + "of " + card.getSuit());
+            System.out.println(card.getCardValue() + " of " + card.getSuit());
         }
     }
 

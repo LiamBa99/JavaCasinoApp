@@ -19,10 +19,17 @@ public class CardDeck {
         List<Card> fullDeck = new ArrayList<>();
         int suitIndex = 0;
         int cardValue = 1;
+        int faceValue = 10;
         String currentSuit = suitList[suitIndex];
 
         for (int i = 1; i <= 52; i++) {
-            fullDeck.add(new Card(cardValue,currentSuit));
+            if (i % 13 == 11 || i % 13 == 12 || i % 13 == 0) {
+                fullDeck.add(new Card(faceValue, currentSuit));
+            } else if ((i - 1) % 13 == 0) {
+                fullDeck.add(new Card(11, currentSuit));
+            } else {
+                fullDeck.add(new Card(cardValue, currentSuit));
+            }
             cardValue++;
             if (i % 13 == 0 && i != 52) {
                 suitIndex++;

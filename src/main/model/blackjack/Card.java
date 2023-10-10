@@ -7,7 +7,7 @@ public class Card {
     private final int cardValue; // tracks the value of the card
     private final String suit; // tracks the suit of the card
 
-    // REQUIRES: cardValue is in the range 1 - 13 and suit is either "Spade" "Club" "Diamond" or "Heart
+    // REQUIRES: cardValue is in the range 1 - 10 and suit is either "Spade" "Club" "Diamond" or "Heart
     // EFFECTS: cardValue is set to cardValue, suit is set to suit
     public Card(int cardValue, String suit) {
         this.cardValue = cardValue;
