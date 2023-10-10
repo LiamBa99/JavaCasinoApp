@@ -12,6 +12,7 @@ class BlackjackGameTest {
 
     private BlackjackGame blackjackTestGame;
     private BlackjackGame blackjackTestGame2;
+    private BlackjackGame blackjackTestGame3;
     private CardDeck testCardDeck;
     private Casino casinoTest;
 
@@ -20,18 +21,17 @@ class BlackjackGameTest {
         casinoTest = new Casino(1000);
         blackjackTestGame = new BlackjackGame(4, casinoTest);
         blackjackTestGame2 = new BlackjackGame(0,casinoTest);
+        blackjackTestGame3 = new BlackjackGame(1,casinoTest);
         testCardDeck = new CardDeck();
     }
 
     @Test
     void constructorTest(){
         // case with standard construction
-        assertEquals(1,blackjackTestGame.getNumOfPlayers());
         assertEquals(4,blackjackTestGame.getNumOfDecks());
         assertEquals(casinoTest,blackjackTestGame.getCurrentCasino());
 
         // minimum case
-        assertEquals(0,blackjackTestGame2.getNumOfPlayers());
         assertEquals(0,blackjackTestGame2.getNumOfDecks());
         assertEquals(casinoTest,blackjackTestGame2.getCurrentCasino());
     }
@@ -44,25 +44,20 @@ class BlackjackGameTest {
     @Test
     void checkEnoughMoneyTest(){
         // true case
-        assertEquals(true,blackjackTestGame.checkEnoughMoney(500));
+        assertTrue(blackjackTestGame.checkEnoughMoney(500));
 
         // false case
-        assertEquals(false,blackjackTestGame.checkEnoughMoney(1001));
+        assertFalse(blackjackTestGame.checkEnoughMoney(1001));
     }
 
-    @Test
-    void getNumOfPlayersTest() {
-        // base case
-        assertEquals(1, blackjackTestGame.getNumOfPlayers());
-
-        // case with zero players
-        assertEquals(0,blackjackTestGame2.getNumOfPlayers());
-    }
 
     @Test
     void getDealerDecks() {
         // base case
-        assertEquals(testCardDeck.getCardDeck(),blackjackTestGame.getDealerDecks());
+        for (int i = 0; i < testCardDeck.getCardDeck().size(); i++) {
+            assertEquals(blackjackTestGame3.getDealerDecks().get(i).getCardValue(),
+                    testCardDeck.getCardDeck().get(i).getCardValue());
+        }
     }
 
     @Test
@@ -89,9 +84,9 @@ class BlackjackGameTest {
     @Test
     void getNumOfDecksTest() {
         // test the normal case
-        assertEquals(4, blackjackTestGame.getDealerDecks());
+        assertEquals(4, blackjackTestGame.getNumOfDecks());
         // test the minimum case
-        assertEquals(0,blackjackTestGame2.getDealerDecks());
+        assertEquals(0,blackjackTestGame2.getNumOfDecks());
     }
 
 }

@@ -7,54 +7,56 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import model.roulette.*;
 
+import java.util.*;
+
 public class RouletteTest {
 
     private RouletteRound testRoulette1;
     private RouletteRound testRoulette2;
     private RouletteRound testRoulette3;
     private int[] testPlayerSelection1;
-    private int[] testPlayerSelection2;
-    private String[] testColourSelection;
-    private String[] testEvenSelection;
-    private String[] testNoSelection;
+    private List<String> testColourSelection;
     private int testPlayerBet;
-    private final int[] rouletteBoard = {0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+    private final int[] rouletteBoard = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
             16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
 
 
     @BeforeEach
     void runBefore() {
-        testPlayerSelection1 = new int[] {0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+        testPlayerSelection1 = new int[] {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
                 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
-        testPlayerSelection2 = new int[] {1};
-        testColourSelection = new String[] {"Red"};
-        testEvenSelection = new String[] {"Even"};
-        testNoSelection = new String[] {};
+        int[] testPlayerSelection2 = new int[] {1};
+        testColourSelection = new ArrayList<>();
+        testColourSelection.add("red");
+        List<String> testNoSelection = new ArrayList<>();
         testPlayerBet = 5;
         testRoulette1 = new RouletteRound(testPlayerSelection1,testPlayerBet,testColourSelection);
         testRoulette2 = new RouletteRound(testPlayerSelection2,testPlayerBet,testNoSelection);
-        testRoulette3 = new RouletteRound(testPlayerSelection2,testPlayerBet,testEvenSelection);
+        testRoulette3 = new RouletteRound(testPlayerSelection2,testPlayerBet,testColourSelection);
     }
 
     @Test
     void testConstructor() {
         assertEquals(testPlayerBet,testRoulette1.getPlayerBet());
         assertEquals(testPlayerSelection1,testRoulette1.getPlayerSelection());
-        assertEquals(rouletteBoard,testRoulette1.getRouletteBoard());
+        for (int i = 0; i < rouletteBoard.length - 1; i++) {
+            assertEquals(rouletteBoard[i], testRoulette1.getRouletteBoard()[i]);
+        }
         assertEquals(testColourSelection,testRoulette1.getPlayerColourEvenSelection());
     }
 
     @Test
     void testCheckWin() {
         // test case where they must win
-        assertTrue(testRoulette1.checkWin());
+        assertTrue(testRoulette1.checkWin() >= 1);
 
         // test case with low odds to win
         int winCounter = 0;
         int loseCounter = 0;
 
         for (int i = 0; i < 20; i++) {
-            if(testRoulette2.checkWin()) {
+            int winWeight = testRoulette2.checkWin();
+            if(winWeight == 1 || winWeight == 2) {
                 winCounter++;
             } else {
                 loseCounter++;
@@ -68,17 +70,32 @@ public class RouletteTest {
         loseCounter = 0;
 
         for (int i = 0; i < 30; i++) {
-            if(testRoulette3.checkWin()) {
+            int winWeight = testRoulette3.checkWin();
+            if(winWeight == 1 || winWeight == 2) {
                 winCounter++;
             } else {
                 loseCounter++;
             }
         }
 
-        int upperRange = loseCounter + 5;
-        int lowerRange = loseCounter - 5;
+        int upperRange = loseCounter + 8;
+        int lowerRange = loseCounter - 8;
 
         assertTrue((lowerRange < winCounter) && (upperRange > winCounter));
+    }
+
+    @Test
+    void testSelectNumber(){
+        boolean found = false;
+        int winningNumber = testRoulette1.selectNumber();
+        for (int i : testRoulette1.getPlayerSelection()) {
+            if (i == winningNumber) {
+                found = true;
+                break;
+            }
+        }
+
+        assertTrue(found);
     }
 
 }

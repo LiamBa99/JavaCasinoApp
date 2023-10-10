@@ -14,12 +14,11 @@ public class CasinoTest {
 
     private Casino testCasino;
     private Prize testPrize;
-    private int[] colourArray;
 
     @BeforeEach
     void runBefore() {
         testCasino = new Casino(1000);
-        colourArray = new int[] {255,0,0};
+        int[] colourArray = new int[] {255,0,0};
         testPrize = new Prize(500,"Elephant",colourArray);
     }
 
@@ -70,7 +69,7 @@ public class CasinoTest {
         assertTrue(testCasino.addPrize(testPrize));
 
         // get the prizelist
-        List<Prize> testPrizeList = testCasino.getPrizeList();
+        List<Prize> testPrizeList = testCasino.getInventory();
 
         // check the list contains the prize
         assertTrue(testPrizeList.contains(testPrize));
@@ -79,7 +78,7 @@ public class CasinoTest {
         assertTrue(testCasino.removePrize(testPrize));
 
         // get the list again
-        testPrizeList = testCasino.getPrizeList();
+        testPrizeList = testCasino.getInventory();
 
         // check the list no longer contains the prize
         assertFalse(testPrizeList.contains(testPrize));

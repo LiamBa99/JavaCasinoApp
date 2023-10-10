@@ -7,77 +7,63 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.*;
+
 public class ShopTest {
 
     private Shop shopTest;
     private Casino casinoTest;
+    private final List<String> animalTypeList = new ArrayList<>();
 
     @BeforeEach
     void runBefore() {
-        shopTest = new Shop();
-        casinoTest = new Casino(5000);
+        casinoTest = new Casino(10000);
+        shopTest = new Shop(casinoTest);
+        animalTypeList.add("Elephant");
+        animalTypeList.add("Giraffe");
+        animalTypeList.add("Rhino");
+        animalTypeList.add("T-Rex");
+        animalTypeList.add("Dog");
+        animalTypeList.add("Cat");
+        animalTypeList.add("Hamster");
+        animalTypeList.add("Gerbil");
+        animalTypeList.add("Raccoon");
     }
 
     @Test
     void testConstructor() {
-        assertTrue(shopTest.getPrizeList().size() == 0);
-        assertTrue(shopTest.getCurrentCasino() != null);
+        assertEquals(0,shopTest.getPrizeList().size());
+        assertNotNull(shopTest.getCurrentCasino());
     }
 
     @Test
     void testGeneratePrizes() {
         // base case
         assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
-        assertFalse(shopTest.getPrizeList().get(0) == shopTest.getPrizeList().get(1));
+        shopTest.generatePrizes();
+        assertEquals(9,shopTest.getPrizeList().size());
+        assertNotSame(shopTest.getPrizeList().get(0), shopTest.getPrizeList().get(1));
 
-        // min case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
-
-        // large num case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(25);
-        assertEquals(25,shopTest.getPrizeList().size());
-        assertFalse(shopTest.getPrizeList().get(5) == shopTest.getPrizeList().get(15));
+        List<Prize> testPrizeList = shopTest.getPrizeList();
+        Prize testPrize = testPrizeList.get(0);
+        assertTrue(testPrize.getValue() > 0 && testPrize.getValue() <= 10000);
+        int colourSum = testPrize.getColour()[0] + testPrize.getColour()[1] + testPrize.getColour()[2];
+        assertTrue(colourSum > 0 && colourSum < 765);
+        assertTrue(animalTypeList.contains(testPrize.getAnimalType()));
     }
 
-    @Test
-    void testRefreshPrizes() {
-        // base case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
-        shopTest.refreshPrizes(8);
-        assertEquals(8,shopTest.getPrizeList().size());
-
-        // min case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
-        shopTest.refreshPrizes(0);
-        assertEquals(0,shopTest.getPrizeList().size());
-
-        // large num case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
-        shopTest.refreshPrizes(25);
-        assertEquals(25,shopTest.getPrizeList().size());
-    }
 
     @Test
     void testBuyPrize() {
         int oldBalance = casinoTest.getPlayerBalance();
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
+        shopTest.generatePrizes();
+        assertEquals(9,shopTest.getPrizeList().size());
 
-        Prize purchasedPrize = shopTest.buyPrize(4);
-        assertEquals(4,shopTest.getPrizeList().size());
+        assertTrue(shopTest.buyPrize(4));
+        Prize purchasedPrize = casinoTest.getInventory().get(0);
+        assertEquals(8,shopTest.getPrizeList().size());
 
-        assertEquals(purchasedPrize,shopTest.getCurrentCasino().getPrizeList().get(0));
+        assertEquals(purchasedPrize,shopTest.getCurrentCasino().getInventory().get(0));
 
         assertEquals(casinoTest.getPlayerBalance(),oldBalance - purchasedPrize.getValue());
     }
@@ -85,19 +71,20 @@ public class ShopTest {
     @Test
     void testSellPrize() {
         int oldBalance = casinoTest.getPlayerBalance();
-        shopTest.generatePrizes(5);
-        assertEquals(5,shopTest.getPrizeList().size());
+        shopTest.generatePrizes();
+        assertEquals(9,shopTest.getPrizeList().size());
 
-        Prize purchasedPrize = shopTest.buyPrize(4);
-        assertEquals(4,shopTest.getPrizeList().size());
+        assertTrue(shopTest.buyPrize(1));
 
-        assertEquals(purchasedPrize,shopTest.getCurrentCasino().getPrizeList().get(0));
+        Prize purchasedPrize = casinoTest.getInventory().get(0);
+        assertEquals(8,shopTest.getPrizeList().size());
+
+        assertEquals(purchasedPrize,shopTest.getCurrentCasino().getInventory().get(0));
 
         assertEquals(casinoTest.getPlayerBalance(),oldBalance - purchasedPrize.getValue());
 
-        assertTrue(shopTest.sellPrize(purchasedPrize));
-
+        shopTest.sellPrize(purchasedPrize);
         assertEquals(oldBalance, casinoTest.getPlayerBalance());
-        assertFalse(casinoTest.getPrizeList().contains(purchasedPrize));
+        assertFalse(casinoTest.getInventory().contains(purchasedPrize));
     }
 }
