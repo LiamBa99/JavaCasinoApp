@@ -56,6 +56,10 @@ public class ShopTest {
         shopTest.generatePrizes();
         assertEquals(9,shopTest.getPrizeList().size());
 
+        casinoTest.deductPlayerBalance(10000);
+        assertFalse(shopTest.buyPrize(4));
+        
+        casinoTest.addPlayerBalance(10000);
         assertTrue(shopTest.buyPrize(4));
         Prize purchasedPrize = casinoTest.getInventory().get(0);
         assertEquals(8,shopTest.getPrizeList().size());

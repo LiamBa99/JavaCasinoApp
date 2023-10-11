@@ -48,12 +48,7 @@ public class Casino {
     // EFFECTS: adds a given prize to the players inventory if not already present
     // returns true if successfully added, false otherwise
     public boolean addPrize(Prize prize) {
-        boolean success = false;
-        if (!inventory.contains(prize)) {
-            inventory.add(prize);
-            success = true;
-        }
-        return success;
+        return (inventory.add(prize));
     }
 
     // REQUIRES: prize is not null

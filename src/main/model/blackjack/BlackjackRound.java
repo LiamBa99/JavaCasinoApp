@@ -59,10 +59,6 @@ public class BlackjackRound {
             win = true;
         } else if (playerCardValue > dealerCardValue && playerCardValue <= 21) {
             win = true;
-        } else if (dealerCardValue > playerCardValue && dealerCardValue < 21) {
-            win = false;
-        } else if (playerCardValue > 21) {
-            win = false;
         }
         return win;
     }
