@@ -15,20 +15,21 @@ public class RouletteTest {
     private RouletteRound testRoulette2;
     private RouletteRound testRoulette3;
     private RouletteRound testRoulette4;
-    private int[] testPlayerSelection1;
+    private ArrayList<Integer> testPlayerSelection1;
+    private ArrayList<Integer> testPlayerSelection2;
     private List<String> testColourSelection;
     private List<String> testColourSelection2;
     private List<String> testColourSelection3;
     private int testPlayerBet;
-    private final int[] rouletteBoard = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-            16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
+    private final ArrayList<Integer> rouletteBoard = new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
+            15, 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36));
 
 
     @BeforeEach
     void runBefore() {
-        testPlayerSelection1 = new int[] {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-                16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
-        int[] testPlayerSelection2 = new int[] {1};
+        testPlayerSelection1 = new ArrayList<>(Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+                16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36));
+        testPlayerSelection2 = new ArrayList<>(List.of(1));
         testColourSelection = new ArrayList<>();
         testColourSelection.add("red");
         testColourSelection2 = new ArrayList<>();
@@ -47,8 +48,8 @@ public class RouletteTest {
     void testConstructor() {
         assertEquals(testPlayerBet,testRoulette1.getPlayerBet());
         assertEquals(testPlayerSelection1,testRoulette1.getPlayerSelection());
-        for (int i = 0; i < rouletteBoard.length - 1; i++) {
-            assertEquals(rouletteBoard[i], testRoulette1.getRouletteBoard()[i]);
+        for (int i = 0; i < rouletteBoard.size() - 1; i++) {
+            assertEquals(rouletteBoard.get(i), testRoulette1.getRouletteBoard().get(i));
         }
         assertEquals(testColourSelection,testRoulette1.getPlayerColourEvenSelection());
     }
@@ -122,6 +123,13 @@ public class RouletteTest {
         }
 
         assertTrue(found);
+    }
+
+    @Test
+    void testGetSelectedNumber() {
+        testRoulette1.selectNumber();
+        int winningNumber = testRoulette1.getSelectedNumber();
+        assertTrue(winningNumber >= 0 && winningNumber <= 36);
     }
 
 }

@@ -8,20 +8,14 @@ import model.prizeshop.*;
 // represents the casino the user enters
 // contains the user's balance
 public class Casino {
-    private int playerBalance;
-    private final List<Prize> inventory;
+    private int playerBalance; // represents the player's balance
+    private final ArrayList<Prize> inventory; // represents the player's inventory of prizes
 
     // EFFECTS: creates a casino with the player's balance and an empty inventory
     public Casino(int playerBalance) {
         this.playerBalance = playerBalance;
         inventory = new ArrayList<>();
     }
-
-//    // TODO: this
-//    // EFFECTS: saves the player's current casino session including balance and inventory
-//    public void saveCasinoSession() {
-//
-//    }
 
     // EFFECTS: returns the player's current balance
     public int getPlayerBalance() {
@@ -76,7 +70,7 @@ public class Casino {
     }
 
     // EFFECTS: returns the prize list
-    public List<Prize> getInventory() {
+    public ArrayList<Prize> getInventory() {
         return inventory;
     }
 }

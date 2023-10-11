@@ -4,11 +4,11 @@ import java.util.*;
 
 public class BlackjackRound {
 
-    private List<Card> playerHand;
-    private List<Card> dealerHand;
-    private final BlackjackGame blackjack;
-    private int playerCardValue;
-    private int dealerCardValue;
+    private final List<Card> playerHand; // represents the players hand
+    private final List<Card> dealerHand; // represents the dealers hand
+    private final BlackjackGame blackjack; // represents the overall game of blackjack
+    private int playerCardValue; // represents the value of the player's cards
+    private int dealerCardValue; // represents the value of the dealer's cards
 
     // EFFECTS: constructs a round of blackjack with player and dealer card value set to 0
     public BlackjackRound(BlackjackGame blackjack) {
@@ -34,7 +34,7 @@ public class BlackjackRound {
         return cardToDeal;
     }
 
-
+    // MODIFIES: this
     // EFFECTS: deals out the first round of cards
     public void dealFirstCards() {
         dealACard(false);
@@ -43,13 +43,13 @@ public class BlackjackRound {
 
     }
 
+    // MODIFIES: this
     // EFFECTS: deals cards to the dealer until they are at a hard 17 or bust
     public void dealUntilComplete() {
         while (dealerCardValue < 17) {
             dealACard(true);
         }
     }
-
 
     // EFFECTS: returns true if the user won the round, false if the dealer won
     public boolean checkWin() {

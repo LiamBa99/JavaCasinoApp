@@ -41,6 +41,7 @@ public class CardDeck {
         return fullDeck;
     }
 
+    // EFFECTS: returns the card deck
     public List<Card> getCardDeck() {
         return cardDeck;
     }

@@ -8,9 +8,9 @@ import java.util.*;
 public class BlackjackGame implements CasinoGame {
     private final List<Card> dealerDecks; // represents the variable amount of card decks the dealer randomly gets from
     private final Casino casino; // represents the casino the player is currently playing at
-    private int currentBet;
-    private final int numOfDecks;
-    private int numOfCards;
+    private int currentBet; // represents the players current bet
+    private final int numOfDecks; // represents the number of decks in play
+    private int numOfCards; // represents the number of cards in the deck
 
     // REQUIRES: casino is not null
     // EFFECTS:

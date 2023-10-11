@@ -8,10 +8,10 @@ import model.casino.Casino;
 public class Shop {
     List<Prize> prizeList; // represents the list of prizes available for purchase
     Casino casino; // represents the casino the player is currently playing at
-    List<String> animalTypeList;
+    List<String> animalTypeList; // represents the possible types of animals
 
     // EFFECTS: constructs a shop of prizes with the inputted casino, an empty prize list and the
-    // premade set of animal types
+    // pre-made set of animal types
     public Shop(Casino casino) {
         this.casino = casino;
         animalTypeList = new ArrayList<>();
