@@ -193,38 +193,14 @@ public class CasinoApp {
     // EFFECTS: asks the player if they want to hit or stand, hitting until they want to stop. When player is standing
     // deal the dealer's cards until game is complete
     // returns the instance of the round
-    // if block in itself is longer than 25 lines, cant split into helpers
-    @SuppressWarnings("methodlength")
+
     public BlackjackRound blackJackGameLogic(BlackjackRound currentRound) {
         if (!isBlackjack(currentRound)) {
             boolean standing = false;
             while (!standing) {
-                System.out.println("You have " + currentRound.getPlayerCardValue()
-                        + " Would you like to hit or stand?");
-                System.out.println("Press h to hit and s to stand");
-
-                String command = input.next().toLowerCase();
-
+                String command = getBlackjackCommand(currentRound);
                 if (command.equals("h")) {
-                    while (!standing) {
-                        currentRound.dealACard(false);
-                        showCurrentCards(currentRound);
-                        if (currentRound.getPlayerCardValue() > 21) {
-                            System.out.println("Oops! You busted");
-                            standing = true;
-                        } else if (currentRound.getPlayerCardValue() == 21) {
-                            System.out.println("You hit 21!");
-                            standing = true;
-                        } else {
-                            System.out.println("Hit again? Press h to hit or s to stand");
-                            command = input.next().toLowerCase();
-                            if (command.equals("s")) {
-                                standing = true;
-                                System.out.println("Standing!");
-                                currentRound.dealUntilComplete();
-                            }
-                        }
-                    }
+                    standing = blackjackStillStanding(currentRound, standing);
                 } else if (command.equals("s")) {
                     standing = true;
                     System.out.println("Standing!");
@@ -233,6 +209,41 @@ public class CasinoApp {
             }
         }
         return currentRound;
+    }
+
+    // EFFECTS: returns whether the player wants to hit or stand
+    public String getBlackjackCommand(BlackjackRound currentRound) {
+        System.out.println("You have " + currentRound.getPlayerCardValue()
+                + " Would you like to hit or stand?");
+        System.out.println("Press h to hit and s to stand");
+
+        String command = input.next().toLowerCase();
+        return command;
+    }
+
+    // MODIFIES: blackjackRound, this
+    // EFFECTS: deals a card until the player no longer wants to hit
+    public boolean blackjackStillStanding(BlackjackRound currentRound, boolean standing) {
+        while (!standing) {
+            currentRound.dealACard(false);
+            showCurrentCards(currentRound);
+            if (currentRound.getPlayerCardValue() > 21) {
+                System.out.println("Oops! You busted");
+                standing = true;
+            } else if (currentRound.getPlayerCardValue() == 21) {
+                System.out.println("You hit 21!");
+                standing = true;
+            } else {
+                System.out.println("Hit again? Press h to hit or s to stand");
+                String command = input.next().toLowerCase();
+                if (command.equals("s")) {
+                    standing = true;
+                    System.out.println("Standing!");
+                    currentRound.dealUntilComplete();
+                }
+            }
+        }
+        return standing;
     }
 
     // MODIFIES: this, Casino, BlackjackGame, BlackjackRound, CardDeck
