@@ -46,9 +46,7 @@ public class BlackjackRound {
     // EFFECTS: deals cards to the dealer until they are at a hard 17 or bust
     public void dealUntilComplete() {
         while (dealerCardValue < 17) {
-            Card cardToAdd = dealACard(true);
-            dealerHand.add(cardToAdd);
-            dealerCardValue += cardToAdd.getCardValue();
+            dealACard(true);
         }
     }
 
@@ -59,7 +57,7 @@ public class BlackjackRound {
 
         if (dealerCardValue > 21) {
             win = true;
-        } else if (playerCardValue > dealerCardValue && playerCardValue < 21) {
+        } else if (playerCardValue > dealerCardValue && playerCardValue <= 21) {
             win = true;
         } else if (dealerCardValue > playerCardValue && dealerCardValue < 21) {
             win = false;

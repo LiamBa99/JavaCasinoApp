@@ -6,6 +6,8 @@ import model.blackjack.BlackjackGame;
 import model.blackjack.BlackjackRound;
 import model.casino.*;
 import model.blackjack.*;
+import model.prizeshop.*;
+import java.awt.*;
 
 // represents the casino console app
 public class CasinoApp {
@@ -14,12 +16,13 @@ public class CasinoApp {
     private Casino currentCasino;
     private Scanner input;
     private boolean keepGoing;
+    private Shop prizeShop;
 
 
     // EFFECTS: constructs the Casino console interface
     public CasinoApp() {
         currentCasino = new Casino(0);
-        currentGame = null;
+        prizeShop = new Shop(currentCasino);
         input = new Scanner(System.in);
         keepGoing = true;
         runCasinoApp();
@@ -55,8 +58,6 @@ public class CasinoApp {
             displayBalance();
         } else if (command.equals("+")) {
             addBalance();
-        } else if (command.equals("q")) {
-            quitCasino();
         } else if (command.equals("m")) {
             displayWelcome();
         } else if (command.equals("j")) {
@@ -65,7 +66,6 @@ public class CasinoApp {
             playRoulette();
         } else if (command.equals("q")) {
             quitCasino();
-            displayWelcome();
         }
     }
 
@@ -136,6 +136,7 @@ public class CasinoApp {
     public boolean playBlackjackRound(BlackjackGame blackjack) {
         boolean playAgain = false;
 
+        // blackjack set up
         BlackjackRound currentRound = new BlackjackRound(blackjack);
 
         System.out.println("Welcome to Blackjack!");
@@ -150,15 +151,22 @@ public class CasinoApp {
 
         blackjack.setCurrentBet(betAmount);
 
-
         System.out.println("Here comes the first cards");
 
         currentRound.dealFirstCards();
 
         showCurrentCards(currentRound);
 
-        hitOrStand(currentRound);
-        // if no blackjack ask if they want to hit or stand
+        // game logic
+        currentRound = blackJackGameLogic(currentRound);
+
+        // results
+        playAgain = blackJackResultsPresenter(currentRound,betAmount);
+
+        return playAgain;
+    }
+
+    public BlackjackRound blackJackGameLogic(BlackjackRound currentRound) {
         if (!isBlackjack(currentRound)) {
             boolean standing = false;
             while (!standing) {
@@ -183,17 +191,24 @@ public class CasinoApp {
                             command = input.next().toLowerCase();
                             if (command.equals("s")) {
                                 standing = true;
+                                System.out.println("Standing!");
+                                currentRound.dealUntilComplete();
                             }
                         }
                     }
                 } else if (command.equals("s")) {
                     standing = true;
+                    System.out.println("Standing!");
                     currentRound.dealUntilComplete();
                 }
             }
         }
+        return currentRound;
+    }
 
+    public boolean blackJackResultsPresenter(BlackjackRound currentRound,int betAmount) {
         showCurrentCards(currentRound);
+        boolean playAgain = false;
         System.out.println("The dealer ended up with: " + currentRound.getDealerCardValue());
         System.out.println("You ended up with: " + currentRound.getPlayerCardValue());
 
@@ -217,7 +232,6 @@ public class CasinoApp {
             System.out.println("That was not a valid response, try again!");
         }
 
-
         return playAgain;
     }
 
@@ -227,7 +241,63 @@ public class CasinoApp {
 
     // EFFECTS: shows the user the available items to purchase in the shop
     public void displayPrizeShop() {
+        System.out.println("These are the prizes currently available!: ");
 
+        for (Prize prize : prizeShop.getPrizeList()) {
+            int r = prize.getColour()[0];
+            int g = prize.getColour()[1];
+            int b = prize.getColour()[2];
+            Color c = new Color(r, g, b);
+            System.out.println("Price: " + prize.getValue() + " Animal Type: " + prize.getAnimalType());
+        }
+
+        System.out.println("Would you like to purchase a prize? input y for yes or n for no: ");
+        String command = input.next().toLowerCase();
+        if (command.equals("y")) {
+            buyPrize();
+        } else {
+            displayWelcome();
+        }
+    }
+
+    public void buyPrize() {
+        ArrayList<String> validInputs = new ArrayList<>(Arrays.asList("r","m","1","2","3","4","5","6","7","8","9"));
+
+        System.out.println("Input 1 - 9 to select the corresponding prize. \n Press r to refresh the shop or press m"
+                + " to return to the menu!");
+
+        String command = input.next().toLowerCase();
+
+        while (!validInputs.contains(command)) {
+            System.out.println("That's not a valid input, please try again!");
+        }
+
+        if (command.equals("r")) {
+            prizeShop.generatePrizes();
+            displayPrizeShop();
+        } else if (command.equals("m")) {
+            displayWelcome();
+        }
+
+        if (Integer.parseInt(command) > 0 && Integer.parseInt(command) < 10) {
+            if (prizeShop.buyPrize(Integer.parseInt(command) - 1)) {
+                System.out.println("You successfully purchased the prize!");
+            } else {
+                System.out.println("You don't have enough funds! Try again later.");
+            }
+        }
+
+        anotherPurchase();
+    }
+
+    public void anotherPurchase() {
+        System.out.println("Make another purchase? y or n");
+        String command = input.next().toLowerCase();
+        if (command.equals("y")) {
+            displayPrizeShop();
+        } else {
+            displayWelcome();
+        }
     }
 
     // MODIFIES: this
@@ -254,10 +324,6 @@ public class CasinoApp {
         for (Card card : currentRound.getPlayerHand()) {
             System.out.println(card.getCardValue() + " of " + card.getSuit());
         }
-    }
-
-    public void hitOrStand(BlackjackRound currentRound) {
-
     }
 
 }

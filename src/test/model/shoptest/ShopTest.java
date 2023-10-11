@@ -32,15 +32,12 @@ public class ShopTest {
 
     @Test
     void testConstructor() {
-        assertEquals(0,shopTest.getPrizeList().size());
         assertNotNull(shopTest.getCurrentCasino());
     }
 
     @Test
     void testGeneratePrizes() {
         // base case
-        assertEquals(0,shopTest.getPrizeList().size());
-        shopTest.generatePrizes();
         assertEquals(9,shopTest.getPrizeList().size());
         assertNotSame(shopTest.getPrizeList().get(0), shopTest.getPrizeList().get(1));
 

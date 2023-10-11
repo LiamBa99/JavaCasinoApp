@@ -13,7 +13,6 @@ public class Shop {
     // EFFECTS: constructs a shop of prizes with the inputted casino, an empty prize list and the
     // premade set of animal types
     public Shop(Casino casino) {
-        prizeList = new ArrayList<>();
         this.casino = casino;
         animalTypeList = new ArrayList<>();
         animalTypeList.add("Elephant");
@@ -25,17 +24,19 @@ public class Shop {
         animalTypeList.add("Hamster");
         animalTypeList.add("Gerbil");
         animalTypeList.add("Raccoon");
+        generatePrizes();
     }
 
 
     // MODIFIES: this
     // EFFECTS: randomly generates 9 prizes and adds them to the prizeList
     public void generatePrizes() {
+        prizeList = new ArrayList<>();
         Random random = new Random();
-        int[] colour = {random.nextInt(255),random.nextInt(255),random.nextInt(255)};
-        int value = random.nextInt(10000);
-        int animalType = random.nextInt(8);
         for (int i = 0; i < 9; i++) {
+            int[] colour = {random.nextInt(255),random.nextInt(255),random.nextInt(255)};
+            int value = random.nextInt(10000);
+            int animalType = random.nextInt(8);
             prizeList.add(new Prize(value, animalTypeList.get(animalType), colour));
         }
     }
