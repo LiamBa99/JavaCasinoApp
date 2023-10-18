@@ -1,0 +1,8 @@
+{
+    "balance": 41724,
+    "inventory": [{
+        "index": 0,
+        "type": "Cat",
+        "value": 8281
+    }]
+}

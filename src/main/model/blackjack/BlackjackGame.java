@@ -1,15 +1,18 @@
 package model.blackjack;
 
-import model.CasinoGame;
 import model.casino.*;
+import persistence.Writable;
+
+import org.json.*;
+
 import java.util.*;
 
 // represents a game of blackjack with a variable amount of card decks
-public class BlackjackGame implements CasinoGame {
-    private final List<Card> dealerDecks; // represents the variable amount of card decks the dealer randomly gets from
-    private final Casino casino; // represents the casino the player is currently playing at
+public class BlackjackGame implements Writable {
+    private List<Card> dealerDecks; // represents the variable amount of card decks the dealer randomly gets from
+    private Casino casino; // represents the casino the player is currently playing at
     private int currentBet; // represents the players current bet
-    private final int numOfDecks; // represents the number of decks in play
+    private int numOfDecks; // represents the number of decks in play
     private int numOfCards; // represents the number of cards in the deck
 
     // REQUIRES: casino is not null
@@ -28,6 +31,29 @@ public class BlackjackGame implements CasinoGame {
         this.numOfCards = 52 * numOfDecks;
         this.casino = casino;
     }
+
+    // EFFECTS: returns this as JSON Object
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("bet",currentBet);
+        json.put("numDecks",numOfDecks);
+        json.put("numCards",numOfCards);
+        json.put("dealerDeck",dealerDecksToJson());
+
+        return json;
+    }
+
+    // returns the dealer decks as a json object
+    public JSONArray dealerDecksToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (Card card : dealerDecks) {
+            jsonArray.put(card.toJson());
+        }
+
+        return jsonArray;
+    }
+
 
     // REQUIRES: newBet > 0
     // MODIFIES: this
@@ -68,5 +94,29 @@ public class BlackjackGame implements CasinoGame {
     // EFFECTS: returns the number of decks
     public int getNumOfDecks() {
         return numOfDecks;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: set the number of decks
+    public void setNumOfDecks(int numOfDecks) {
+        this.numOfDecks = numOfDecks;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: set the number of cards
+    public void setNumOfCards(int numOfCards) {
+        this.numOfCards = numOfCards;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets the dealerdeck
+    public void setDealerDecks(ArrayList<Card> cardList) {
+        dealerDecks = cardList;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: set the casino
+    public void setCasino(Casino casino) {
+        this.casino = casino;
     }
 }

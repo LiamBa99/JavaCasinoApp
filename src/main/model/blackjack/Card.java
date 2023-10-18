@@ -1,9 +1,12 @@
 package model.blackjack;
 
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 // represents a playing card that excludes jokers, having a value 1 - 13 and a suit.
 // colour of the card is derived from the suit
-public class Card {
+public class Card implements Writable {
     private final int cardValue; // tracks the value of the card
     private final String suit; // tracks the suit of the card
 
@@ -22,6 +25,16 @@ public class Card {
     // EFFECTS: return the suit of the card
     public String getSuit() {
         return suit;
+    }
+
+    // EFFECTS: returns the card as a JSON object
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+
+        json.put("value",cardValue);
+        json.put("suit",suit);
+
+        return json;
     }
 
 }

@@ -18,8 +18,7 @@ public class CasinoTest {
     @BeforeEach
     void runBefore() {
         testCasino = new Casino(1000);
-        int[] colourArray = new int[] {255,0,0};
-        testPrize = new Prize(500,"Elephant",colourArray);
+        testPrize = new Prize(500,"Elephant",0);
     }
 
     @Test

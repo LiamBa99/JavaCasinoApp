@@ -40,3 +40,7 @@ into why that is the case.
 - As a user, I want to be able to view my owned prizes
 - As a user, I want to be able to choose a number, colour, or group of numbers in roulette.
 - As a user, I want to be able to see the cards dealt to me in blackjack.
+- As a user, I want the option to save my balance, inventory of prizes, and current shop to a file.
+- As a user, I want the option to load my previous balance, inventory of prizes, and current shop from a file.
+- As a user, I want the option to save my blackjack game state to a file.
+- As a user, I want the option to load my blackjack game state from a file.

@@ -1,16 +1,19 @@
 package model.prizeshop;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 // Represents an individual prize, consisting of its value, animal type, and rgb colour
-public class Prize {
+public class Prize implements Writable {
+    int index;
     int value; // represents the value of the prize
     String animalType; // represents the animal type of the prize
-    int[] colour; // represents the rgb values of the prize's colour
 
     // EFFECTS: constructs a prize according to its inputted value, animalType and RGB colour
-    public Prize(int value, String animalType, int[] colour) {
+    public Prize(int value, String animalType, int index) {
         this.value = value;
         this.animalType = animalType;
-        this.colour = colour;
+        this.index = index;
     }
 
     // EFFECTS: returns the value of the prize
@@ -23,8 +26,15 @@ public class Prize {
         return animalType;
     }
 
-    // EFFECTS: returns the colour of the animal
-    public int[] getColour() {
-        return colour;
+
+    // EFFECTS: returns the prize object as a json object
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("value", value);
+        json.put("type", animalType);
+        json.put("index",index);
+        return json;
     }
+
 }

@@ -1,23 +1,32 @@
 package ui;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
-import model.CasinoGame;
+
 import model.blackjack.BlackjackGame;
 import model.blackjack.BlackjackRound;
 import model.casino.*;
 import model.blackjack.*;
 import model.prizeshop.*;
 import model.roulette.RouletteRound;
+import persistence.JsonWriter;
+import persistence.JsonReader;
 
-import java.awt.*;
 
 // represents the casino console app
 public class CasinoApp {
 
-    private final Casino currentCasino; // represents the casino the player is in
-    private final Scanner input; // represents the inputs the player enters
+    private Casino currentCasino; // represents the casino the player is in
+    private Scanner input; // represents the inputs the player enters
     private boolean keepGoing; // represents if the player would like to continue playing
-    private final Shop prizeShop; // represents the casino's shop of prizes
+    private Shop prizeShop; // represents the casino's shop of prizes
+    private BlackjackGame currentBlackjackGame;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+    private static final String JSON_CASINO = "./data/casino.json";
+    private static final String JSON_BJ = "./data/blackjack.json";
+    private static final String JSON_PS = "./data/prizeshop.json";
 
 
     // EFFECTS: constructs the Casino console interface
@@ -26,6 +35,8 @@ public class CasinoApp {
         prizeShop = new Shop(currentCasino);
         input = new Scanner(System.in);
         keepGoing = true;
+        jsonWriter = new JsonWriter(JSON_CASINO,JSON_BJ,JSON_PS);
+        jsonReader = new JsonReader(JSON_CASINO,JSON_BJ,JSON_PS);
         runCasinoApp();
     }
 
@@ -42,9 +53,13 @@ public class CasinoApp {
         System.out.println("Welcome to the Casino! I hope you brought lots of cash!");
 
         System.out.println("Would you like to play Games? Press G");
-        System.out.println("Would you like to shop for prizes? Press S");
+        System.out.println("Would you like to shop for prizes? Press P");
         System.out.println("Would you like to view your balance? Press B");
         System.out.println("Would you like to view your Inventory? Press I");
+        System.out.println("Would you like to save your current session? Press S");
+        System.out.println("Would you like to load your previous session? Press L");
+        System.out.println("Would you like to leave the casino? Press Q");
+
 
         String command = input.next().toLowerCase();
         processCommand(command);
@@ -67,7 +82,7 @@ public class CasinoApp {
     public void processCommand(String command) {
         if (command.equals("g")) {
             displayAvailableGames();
-        } else if (command.equals("s")) {
+        } else if (command.equals("p")) {
             displayPrizeShop();
         } else if (command.equals("b")) {
             displayBalance();
@@ -83,6 +98,10 @@ public class CasinoApp {
             quitCasino();
         } else if (command.equals("i")) {
             displayInventory();
+        } else if (command.equals("s")) {
+            saveCasinoApp();
+        } else if (command.equals("l")) {
+            loadCasinoApp();
         }
     }
 
@@ -134,23 +153,27 @@ public class CasinoApp {
         boolean keepPlaying = true;
         BlackjackGame playBlackJack;
 
-        System.out.println("Welcome to the BlackJack table!"
-                + " You want to get as close to 21 as possible without going over.");
-        System.out.println("How many decks would you like to play with? The maximum is 4: ");
+        if ((playBlackJack = getBlackjackSave()) != null) {
+            playBlackJack.setCasino(currentCasino);
+        } else {
+            System.out.println("Welcome to the BlackJack table!"
+                    + " You want to get as close to 21 as possible without going over.");
+            System.out.println("How many decks would you like to play with? The maximum is 4: ");
 
-        int deckAmount = input.nextInt();
-        while (deckAmount < 0 || deckAmount > 4) {
-            System.out.println("You must enter a number greater than 0 and less than 5. Try again.");
-            deckAmount = input.nextInt();
+            int deckAmount = input.nextInt();
+            while (deckAmount < 0 || deckAmount > 4) {
+                System.out.println("You must enter a number greater than 0 and less than 5. Try again.");
+                deckAmount = input.nextInt();
+            }
+
+            playBlackJack = new BlackjackGame(deckAmount, currentCasino);
         }
-
-        playBlackJack = new BlackjackGame(deckAmount,currentCasino);
-        // represents the current game being played
-        CasinoGame currentGame = playBlackJack;
 
         while (keepPlaying) {
             keepPlaying = playBlackjackRound(playBlackJack);
         }
+
+        currentBlackjackGame = playBlackJack;
         displayWelcome();
     }
 
@@ -159,12 +182,12 @@ public class CasinoApp {
     public boolean playBlackjackRound(BlackjackGame blackjack) {
         boolean playAgain;
 
-        // blackjack set up
-        BlackjackRound currentRound = new BlackjackRound(blackjack);
-
         System.out.println("Welcome to Blackjack!");
 
         System.out.println("How much would you like to bet?");
+
+        // blackjack set up
+        BlackjackRound currentRound = new BlackjackRound(blackjack);
 
         int betAmount = input.nextInt();
         while (betAmount < 0 || !blackjack.checkEnoughMoney(betAmount)) {
@@ -187,6 +210,32 @@ public class CasinoApp {
         playAgain = blackJackResultsPresenter(currentRound,betAmount);
 
         return playAgain;
+    }
+
+    // EFFECTS: asks the user if they would like to load their save
+    public BlackjackGame getBlackjackSave() {
+        BlackjackGame blackjackGame;
+        // if save exists, asks if they want to load their save
+        try {
+            if ((blackjackGame = jsonReader.readBlackjack()) == null) {
+                return null;
+            }
+        } catch (IOException e) {
+            System.out.println("No blackjack save exists");
+            return null;
+        }
+        System.out.println("Would you like to load your previous blackjack save? y or n");
+        String command = input.next().toLowerCase();
+        while (!(command.equals("y") || command.equals("n"))) {
+            System.out.println("That is not a valid input! Try again");
+            command = input.next().toLowerCase();
+        }
+
+        if (command.equals("y")) {
+            System.out.println("Loaded blackjack successfully from " + JSON_BJ);
+            return blackjackGame;
+        }
+        return null;
     }
 
     // MODIFIES: this, Casino, BlackjackGame, BlackjackRound, CardDeck
@@ -413,12 +462,11 @@ public class CasinoApp {
     public void displayPrizeShop() {
         System.out.println("These are the prizes currently available!: ");
 
+        int i = 1;
         for (Prize prize : prizeShop.getPrizeList()) {
-            int r = prize.getColour()[0];
-            int g = prize.getColour()[1];
-            int b = prize.getColour()[2];
-            Color c = new Color(r, g, b);
-            System.out.println("Price: " + prize.getValue() + " Animal Type: " + prize.getAnimalType());
+            System.out.println("Index : " + i + " Price: " + prize.getValue() + " Animal Type: "
+                    + prize.getAnimalType());
+            i++;
         }
 
         System.out.println("Would you like to purchase a prize? input y for yes or n for no: ");
@@ -496,6 +544,33 @@ public class CasinoApp {
         System.out.println("Your cards are: ");
         for (Card card : currentRound.getPlayerHand()) {
             System.out.println(card.getCardValue() + " of " + card.getSuit());
+        }
+    }
+
+    // MODIFIES: jsonWriter
+    // EFFECTS: saves the casino to the file
+    public void saveCasinoApp() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(currentCasino,currentBlackjackGame,prizeShop);
+            jsonWriter.close();
+            System.out.println("Saved successfully to file");
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file");
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads the casino from the file
+    public void loadCasinoApp() {
+        try {
+            currentCasino = jsonReader.readCasino();
+            System.out.println("Loaded balance and inventory successfully from " + JSON_CASINO);
+            prizeShop = jsonReader.readPrizeShop();
+            prizeShop.setCasino(currentCasino);
+            System.out.println("Loaded prizeShop successfully from " + JSON_PS);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file file ");
         }
     }
 
