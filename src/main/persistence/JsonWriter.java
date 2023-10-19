@@ -41,6 +41,8 @@ public class JsonWriter {
         if (blackjackGame != null) {
             json1 = blackjackGame.toJson();
             saveToBJFile(json1.toString(TAB));
+        } else {
+            // do nothing
         }
 
         JSONObject json2 = casino.toJson();
