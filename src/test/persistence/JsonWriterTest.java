@@ -3,12 +3,16 @@ package persistence;
 import model.casino.*;
 import model.blackjack.*;
 import model.prizeshop.*;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,4 +116,5 @@ public class JsonWriterTest {
             fail("Exception not expected");
         }
     }
+
 }
