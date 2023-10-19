@@ -1,20 +1,15 @@
 {
-    "balance": 43711,
+    "balance": 42137,
     "inventory": [
         {
             "index": 5,
-            "type": "Hamster",
-            "value": 240
+            "type": "T-Rex",
+            "value": 3264
         },
         {
-            "index": 9,
-            "type": "Elephant",
-            "value": 5029
-        },
-        {
-            "index": 2,
-            "type": "Giraffe",
-            "value": 1020
+            "index": 1,
+            "type": "Gerbil",
+            "value": 4599
         }
     ]
 }
