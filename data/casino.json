@@ -1,8 +1,20 @@
 {
-    "balance": 41724,
-    "inventory": [{
-        "index": 0,
-        "type": "Cat",
-        "value": 8281
-    }]
+    "balance": 43711,
+    "inventory": [
+        {
+            "index": 5,
+            "type": "Hamster",
+            "value": 240
+        },
+        {
+            "index": 9,
+            "type": "Elephant",
+            "value": 5029
+        },
+        {
+            "index": 2,
+            "type": "Giraffe",
+            "value": 1020
+        }
+    ]
 }

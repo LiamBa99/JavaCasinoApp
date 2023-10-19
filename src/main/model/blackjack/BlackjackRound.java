@@ -19,7 +19,7 @@ public class BlackjackRound {
         dealerCardValue = 0;
     }
 
-    // MODIFIES: this
+    // MODIFIES: this, blackjackGame
     // EFFECTS: removes a card from the dealer's deck at random and returns it
     public Card dealACard(boolean dealer) {
         Card cardToDeal = blackjack.removeRandomCard();
@@ -34,7 +34,7 @@ public class BlackjackRound {
         return cardToDeal;
     }
 
-    // MODIFIES: this
+    // MODIFIES: this, blackjackGame
     // EFFECTS: deals out the first round of cards
     public void dealFirstCards() {
         dealACard(false);
@@ -43,7 +43,7 @@ public class BlackjackRound {
 
     }
 
-    // MODIFIES: this
+    // MODIFIES: this, blackjackGame
     // EFFECTS: deals cards to the dealer until they are at a hard 17 or bust
     public void dealUntilComplete() {
         while (dealerCardValue < 17) {

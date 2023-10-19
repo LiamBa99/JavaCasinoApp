@@ -1,5 +1,6 @@
 package ui;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -212,6 +213,7 @@ public class CasinoApp {
         return playAgain;
     }
 
+    // MODIFIES: blackjackGame
     // EFFECTS: asks the user if they would like to load their save
     public BlackjackGame getBlackjackSave() {
         BlackjackGame blackjackGame;
@@ -242,7 +244,6 @@ public class CasinoApp {
     // EFFECTS: asks the player if they want to hit or stand, hitting until they want to stop. When player is standing
     // deal the dealer's cards until game is complete
     // returns the instance of the round
-
     public BlackjackRound blackJackGameLogic(BlackjackRound currentRound) {
         if (!isBlackjack(currentRound)) {
             boolean standing = false;
@@ -327,6 +328,7 @@ public class CasinoApp {
         return playAgain;
     }
 
+    // MODIFIES: rouletteRound
     // EFFECTS: starts the roulette system, asks the player if they would like to select a colour and creates
     // a roulette round with the selected colours and numbers. recurs if the player wants to play again, otherwise
     // return to the menu
@@ -394,7 +396,7 @@ public class CasinoApp {
         return command.equals("y");
     }
 
-    // gets the bet amount from the player
+    // EFFECTS: gets the bet amount from the player
     public int getRouletteBet() {
         System.out.println("How much would you like to bet per choice?: ");
         int betAmount = input.nextInt();
@@ -458,6 +460,7 @@ public class CasinoApp {
         return choiceList;
     }
 
+    // MODIFIES: casino, shop
     // EFFECTS: shows the user the available items to purchase in the shop
     public void displayPrizeShop() {
         System.out.println("These are the prizes currently available!: ");
@@ -560,17 +563,21 @@ public class CasinoApp {
         }
     }
 
-    // MODIFIES: this
+    // MODIFIES: this, casino, prizeshop
     // EFFECTS: loads the casino from the file
     public void loadCasinoApp() {
-        try {
-            currentCasino = jsonReader.readCasino();
-            System.out.println("Loaded balance and inventory successfully from " + JSON_CASINO);
-            prizeShop = jsonReader.readPrizeShop();
-            prizeShop.setCasino(currentCasino);
-            System.out.println("Loaded prizeShop successfully from " + JSON_PS);
-        } catch (IOException e) {
-            System.out.println("Unable to read from file file ");
+        if (new File(JSON_CASINO).isFile() && new File(JSON_PS).isFile()) {
+            try {
+                currentCasino = jsonReader.readCasino();
+                System.out.println("Loaded balance and inventory successfully from " + JSON_CASINO);
+                prizeShop = jsonReader.readPrizeShop();
+                prizeShop.setCasino(currentCasino);
+                System.out.println("Loaded prizeShop successfully from " + JSON_PS);
+            } catch (IOException e) {
+                System.out.println("Unable to read from file ");
+            }
+        } else {
+            System.out.println("No file available to load!");
         }
     }
 

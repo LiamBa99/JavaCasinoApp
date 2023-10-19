@@ -84,29 +84,25 @@ public class JsonReader {
     // MODIFIES: blackjackGame
     // EFFECTS: parses blackjackGame from JSON Object and returns it
     private BlackjackGame parseBlackjackGame(JSONObject jsonObject) {
-        if (jsonObject.isEmpty()) {
-            return null;
-        } else {
-            ArrayList<Card> dealerDeck = new ArrayList<>();
+        ArrayList<Card> dealerDeck = new ArrayList<>();
 
-            int bet = jsonObject.getInt("bet");
-            int numCards = jsonObject.getInt("numCards");
-            int numDecks = jsonObject.getInt("numDecks");
+        int bet = jsonObject.getInt("bet");
+        int numCards = jsonObject.getInt("numCards");
+        int numDecks = jsonObject.getInt("numDecks");
 
-            JSONArray jsonArray = jsonObject.getJSONArray("dealerDeck");
-            for (Object json : jsonArray) {
-                JSONObject card = (JSONObject) json;
-                String suit = card.getString("suit");
-                int value = card.getInt("value");
-                dealerDeck.add(new Card(value, suit));
-            }
-            BlackjackGame blackjackGame = new BlackjackGame(0,new Casino(0));
-            blackjackGame.setDealerDecks(dealerDeck);
-            blackjackGame.setNumOfCards(numCards);
-            blackjackGame.setCurrentBet(bet);
-            blackjackGame.setNumOfDecks(numDecks);
-            return blackjackGame;
+        JSONArray jsonArray = jsonObject.getJSONArray("dealerDeck");
+        for (Object json : jsonArray) {
+            JSONObject card = (JSONObject) json;
+            String suit = card.getString("suit");
+            int value = card.getInt("value");
+            dealerDeck.add(new Card(value, suit));
         }
+        BlackjackGame blackjackGame = new BlackjackGame(0,new Casino(0));
+        blackjackGame.setDealerDecks(dealerDeck);
+        blackjackGame.setNumOfCards(numCards);
+        blackjackGame.setCurrentBet(bet);
+        blackjackGame.setNumOfDecks(numDecks);
+        return blackjackGame;
     }
 
     // MODIFIES: shop

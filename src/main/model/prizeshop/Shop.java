@@ -31,6 +31,7 @@ public class Shop implements Writable {
     }
 
     // EFFECTS: returns this as JSON Object
+    @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("Prizes",prizeListToJson());
@@ -40,11 +41,9 @@ public class Shop implements Writable {
     // EFFECTS: returns the prize list as a json Array
     public JSONArray prizeListToJson() {
         JSONArray jsonArray = new JSONArray();
-
         for (Prize prize : prizeList) {
             jsonArray.put(prize.toJson());
         }
-
         return jsonArray;
     }
 
@@ -101,7 +100,7 @@ public class Shop implements Writable {
 
     // MODIFIES: this
     // EFFECTS: sets the prizelist
-    public void setPrizeList(ArrayList<Prize> prizeList) {
+    public void setPrizeList(List<Prize> prizeList) {
         this.prizeList = prizeList;
     }
 
@@ -109,5 +108,10 @@ public class Shop implements Writable {
     // EFFECTS: sets the casino
     public void setCasino(Casino casino) {
         this.casino = casino;
+    }
+
+    // EFFECTS: gets the casino
+    public Casino getCasino() {
+        return casino;
     }
 }

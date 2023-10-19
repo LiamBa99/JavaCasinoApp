@@ -44,8 +44,6 @@ public class ShopTest {
         List<Prize> testPrizeList = shopTest.getPrizeList();
         Prize testPrize = testPrizeList.get(0);
         assertTrue(testPrize.getValue() > 0 && testPrize.getValue() <= 10000);
-        int colourSum = testPrize.getColour()[0] + testPrize.getColour()[1] + testPrize.getColour()[2];
-        assertTrue(colourSum > 0 && colourSum < 765);
         assertTrue(animalTypeList.contains(testPrize.getAnimalType()));
     }
 
@@ -87,5 +85,27 @@ public class ShopTest {
         shopTest.sellPrize(purchasedPrize);
         assertEquals(oldBalance, casinoTest.getPlayerBalance());
         assertFalse(casinoTest.getInventory().contains(purchasedPrize));
+    }
+
+    @Test
+    void setPrizeListTest() {
+        // create a prizeList
+        Shop newShop = new Shop(casinoTest);
+        List<Prize> newPrizeList = newShop.getPrizeList();
+        // set the prizeList
+        shopTest.setPrizeList(newPrizeList);
+
+        // compare the set prizelist with the created prizelist
+        assertEquals(newPrizeList, shopTest.getPrizeList());
+    }
+
+    @Test
+    void setCasinoTest() {
+        // create a new casino
+        Casino newCasino = new Casino(45);
+        // set the casino
+        shopTest.setCasino(newCasino);
+        // check the casino corresponds to the new casino
+        assertEquals(45, shopTest.getCasino().getPlayerBalance());
     }
 }

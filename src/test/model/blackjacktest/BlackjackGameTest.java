@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import model.blackjack.*;
 import model.casino.*;
 
+import java.util.List;
+
 class BlackjackGameTest {
 
     private BlackjackGame blackjackTestGame;
@@ -95,6 +97,57 @@ class BlackjackGameTest {
         assertEquals(4, blackjackTestGame.getNumOfDecks());
         // test the minimum case
         assertEquals(0,blackjackTestGame2.getNumOfDecks());
+    }
+
+    @Test
+    void setNumOfDecksTest() {
+        // set num of decks
+        blackjackTestGame.setNumOfDecks(3);
+        // check the num of decks corresponds correctly
+        assertEquals(3,blackjackTestGame.getNumOfDecks());
+
+        // check it works with zero
+        blackjackTestGame.setNumOfDecks(0);
+
+        // check the num of decks corresponds correctly
+        assertEquals(0,blackjackTestGame.getNumOfDecks());
+    }
+
+    @Test
+    void setNumOfCardsTest() {
+        // set the num of cards
+        blackjackTestGame.setNumOfCards(52);
+        // check the num of cards corresponds correctly
+        assertEquals(52, blackjackTestGame.getNumOfCards());
+
+        // check it works with zero
+        blackjackTestGame.setNumOfCards(0);
+        // check the num of decks corresponds correctly
+        assertEquals(0, blackjackTestGame.getNumOfCards());
+    }
+
+    @Test
+    void setDealerDecksTest() {
+        // set the dealer deck
+        blackjackTestGame.setDealerDecks(testCardDeck.getCardDeck());
+        // check the card deck is equal
+        List<Card> cardList = blackjackTestGame.getDealerDecks();
+        for (int i = 0; i < cardList.size(); i++) {
+            assertEquals(testCardDeck.getCardDeck().get(i),cardList.get(i));
+        }
+
+    }
+
+    @Test
+    void setCasinoTest() {
+        // create a test casino
+        Casino casino = new Casino(45);
+
+        // set the casino
+        blackjackTestGame.setCasino(casino);
+
+        // check the casino corresponds correctly
+        assertEquals(casino, blackjackTestGame.getCasino());
     }
 
 }

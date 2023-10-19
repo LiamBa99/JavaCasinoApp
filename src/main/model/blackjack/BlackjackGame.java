@@ -16,8 +16,7 @@ public class BlackjackGame implements Writable {
     private int numOfCards; // represents the number of cards in the deck
 
     // REQUIRES: casino is not null
-    // EFFECTS:
-    // creates a number of card decks according to numOfDecks and adds them to the dealerDeck
+    // EFFECTS: creates a number of card decks according to numOfDecks and adds them to the dealerDeck
     // sets casino to casino
     public BlackjackGame(int numOfDecks, Casino casino) {
         this.numOfDecks = numOfDecks;
@@ -33,6 +32,7 @@ public class BlackjackGame implements Writable {
     }
 
     // EFFECTS: returns this as JSON Object
+    @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("bet",currentBet);
@@ -43,7 +43,7 @@ public class BlackjackGame implements Writable {
         return json;
     }
 
-    // returns the dealer decks as a json object
+    // EFFECTS: returns the dealer decks as a json object
     public JSONArray dealerDecksToJson() {
         JSONArray jsonArray = new JSONArray();
 
@@ -72,6 +72,7 @@ public class BlackjackGame implements Writable {
         return dealerDecks;
     }
 
+    // EFFECTS: this, CardDeck
     // EFFECTS: returns and removes a random card in the dealer's deck
     public Card removeRandomCard() {
         Random random = new Random();
@@ -110,7 +111,7 @@ public class BlackjackGame implements Writable {
 
     // MODIFIES: this
     // EFFECTS: sets the dealerdeck
-    public void setDealerDecks(ArrayList<Card> cardList) {
+    public void setDealerDecks(List<Card> cardList) {
         dealerDecks = cardList;
     }
 
@@ -118,5 +119,15 @@ public class BlackjackGame implements Writable {
     // EFFECTS: set the casino
     public void setCasino(Casino casino) {
         this.casino = casino;
+    }
+
+    // EFFECTS: gets the num of cards
+    public int getNumOfCards() {
+        return numOfCards;
+    }
+
+    // EFFECTS: gets the casino
+    public Casino getCasino() {
+        return casino;
     }
 }
