@@ -3,16 +3,12 @@ package persistence;
 import model.casino.*;
 import model.blackjack.*;
 import model.prizeshop.*;
-import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,6 +108,26 @@ public class JsonWriterTest {
             assertEquals(numCards, blackjackGame.getNumOfCards());
 
             assertEquals(8,prizeShop.getPrizeList().size());
+        } catch (IOException e) {
+            fail("Exception not expected");
+        }
+    }
+
+    @Test
+    void testWriteNullBlackJack() {
+        Casino casino = new Casino(0);
+        Shop prizeShop = new Shop(casino);
+        Prize firstPrize = prizeShop.getPrizeList().get(0);
+        try {
+            testWriter.open();
+            testWriter.write(casino, null, prizeShop);
+            testWriter.close();
+
+            casino = testReader.readCasino();
+            prizeShop = testReader.readPrizeShop();
+
+            assertEquals(0,casino.getPlayerBalance());
+            assertEquals(firstPrize.getValue(), prizeShop.getPrizeList().get(0).getValue());
         } catch (IOException e) {
             fail("Exception not expected");
         }

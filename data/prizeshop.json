@@ -1,37 +1,47 @@
 {"Prizes": [
     {
+        "index": 1,
+        "type": "T-Rex",
+        "value": 6261
+    },
+    {
         "index": 2,
-        "type": "Rhino",
-        "value": 8170
+        "type": "Cat",
+        "value": 216
     },
     {
         "index": 3,
-        "type": "Rhino",
-        "value": 7846
+        "type": "Giraffe",
+        "value": 6939
     },
     {
         "index": 4,
-        "type": "Elephant",
-        "value": 5203
+        "type": "Gerbil",
+        "value": 2221
+    },
+    {
+        "index": 5,
+        "type": "Gerbil",
+        "value": 4873
     },
     {
         "index": 6,
-        "type": "Hamster",
-        "value": 6557
+        "type": "Gerbil",
+        "value": 4949
     },
     {
         "index": 7,
-        "type": "Giraffe",
-        "value": 296
+        "type": "Gerbil",
+        "value": 8820
     },
     {
         "index": 8,
         "type": "Cat",
-        "value": 6858
+        "value": 9134
     },
     {
         "index": 9,
-        "type": "Dog",
-        "value": 2479
+        "type": "Elephant",
+        "value": 8453
     }
 ]}

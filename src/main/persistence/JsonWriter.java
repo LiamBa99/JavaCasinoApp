@@ -38,9 +38,10 @@ public class JsonWriter {
     public void write(Casino casino, BlackjackGame blackjackGame, Shop prizeShop) {
         JSONObject json1;
 
-
-        json1 = blackjackGame.toJson();
-        saveToBJFile(json1.toString(TAB));
+        if (blackjackGame != null) {
+            json1 = blackjackGame.toJson();
+            saveToBJFile(json1.toString(TAB));
+        }
 
         JSONObject json2 = casino.toJson();
         JSONObject json3 = prizeShop.toJson();

@@ -1,15 +1,4 @@
 {
-    "balance": 42137,
-    "inventory": [
-        {
-            "index": 5,
-            "type": "T-Rex",
-            "value": 3264
-        },
-        {
-            "index": 1,
-            "type": "Gerbil",
-            "value": 4599
-        }
-    ]
+    "balance": 0,
+    "inventory": []
 }
