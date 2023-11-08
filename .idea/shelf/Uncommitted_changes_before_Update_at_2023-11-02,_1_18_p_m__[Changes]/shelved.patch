@@ -1,0 +1,71 @@
+Index: data/prizeshop.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\"Prizes\": [\n    {\n        \"index\": 1,\n        \"type\": \"Rhino\",\n        \"value\": 5735\n    },\n    {\n        \"index\": 3,\n        \"type\": \"Dog\",\n        \"value\": 2124\n    },\n    {\n        \"index\": 4,\n        \"type\": \"Cat\",\n        \"value\": 5566\n    },\n    {\n        \"index\": 6,\n        \"type\": \"Gerbil\",\n        \"value\": 7192\n    },\n    {\n        \"index\": 7,\n        \"type\": \"Gerbil\",\n        \"value\": 7135\n    },\n    {\n        \"index\": 8,\n        \"type\": \"T-Rex\",\n        \"value\": 7452\n    }\n]}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/prizeshop.json b/data/prizeshop.json
+--- a/data/prizeshop.json	
++++ b/data/prizeshop.json	
+@@ -1,32 +1,47 @@
+ {"Prizes": [
+     {
+         "index": 1,
+-        "type": "Rhino",
+-        "value": 5735
++        "type": "Dog",
++        "value": 8723
++    },
++    {
++        "index": 2,
++        "type": "Gerbil",
++        "value": 2481
+     },
+     {
+         "index": 3,
+-        "type": "Dog",
+-        "value": 2124
++        "type": "Hamster",
++        "value": 8595
+     },
+     {
+         "index": 4,
+-        "type": "Cat",
+-        "value": 5566
++        "type": "Giraffe",
++        "value": 1911
++    },
++    {
++        "index": 5,
++        "type": "Rhino",
++        "value": 6771
+     },
+     {
+         "index": 6,
+-        "type": "Gerbil",
+-        "value": 7192
++        "type": "Dog",
++        "value": 5488
+     },
+     {
+         "index": 7,
+-        "type": "Gerbil",
+-        "value": 7135
++        "type": "Dog",
++        "value": 4743
+     },
+     {
+         "index": 8,
+-        "type": "T-Rex",
+-        "value": 7452
++        "type": "Hamster",
++        "value": 8657
++    },
++    {
++        "index": 9,
++        "type": "Giraffe",
++        "value": 4483
+     }
+ ]}
+\ No newline at end of file
