@@ -38,7 +38,7 @@ public class CasinoApp {
         keepGoing = true;
         jsonWriter = new JsonWriter(JSON_CASINO,JSON_BJ,JSON_PS);
         jsonReader = new JsonReader(JSON_CASINO,JSON_BJ,JSON_PS);
-        runCasinoApp();
+        //runCasinoApp();
     }
 
     // MODIFIES: this
