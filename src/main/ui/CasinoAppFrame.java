@@ -6,22 +6,28 @@ import model.prizeshop.*;
 import model.roulette.*;
 import persistence.*;
 
+import java.util.List;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CasinoAppFrame extends JFrame {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
     private Casino casino;
+    private Shop prizeShop;
     private static CardLayout homeLayout;
     private static JPanel homeContainer;
 
 
     public CasinoAppFrame() {
         casino = new Casino(0);
+        prizeShop = new Shop(casino);
         this.setSize(WIDTH,HEIGHT); // set the size of the frame
         this.setTitle("Welcome to the Casino!"); // set the title of the frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close program when frame closes
@@ -56,30 +62,48 @@ public class CasinoAppFrame extends JFrame {
     }
 
     public void setUpPrizesPanel() {
-        JPanel prizesPanel = new JPanel();
-        prizesPanel.add(createHomeButton());
-        homeContainer.add(prizesPanel, "Prizes");
+        JPanel prizesContainer = new JPanel(new GridLayout(3, 1));
+        JLabel prizesLabel = new JLabel("Click on the prize you would like to purchase!");
+        prizesLabel.setHorizontalAlignment(JLabel.CENTER);
+        JPanel prizesPanel = new JPanel(new GridLayout(3,3));
+
+        generatePrizeList(prizesPanel);
+
+        prizesContainer.add(prizesLabel);
+        prizesContainer.add(prizesPanel);
+        prizesContainer.add(createHomeButton());
+        homeContainer.add(prizesContainer, "Prizes");
     }
 
     public void setUpBalancePanel() {
-        JPanel balancePanel = new JPanel();
-        balancePanel.add(createHomeButton());
+        JPanel balancePanel = new JPanel(new GridLayout(5,1));
 
-        JLabel curBalance = new JLabel("Your current balance is: $" + casino.getPlayerBalance());
+        JLabel curBalance = createCenterLabel("Your current balance is: $" + casino.getPlayerBalance());
         balancePanel.add(curBalance);
 
-        JLabel addBalance = new JLabel("How much would you like to deposit?");
+        JLabel addBalance = createCenterLabel("How much would you like to deposit?");
         balancePanel.add(addBalance);
 
         SpinnerModel value = new SpinnerNumberModel(0,0,null,1);
         JSpinner newBalance = new JSpinner(value);
         JButton submitButton = new JButton("Submit");
 
+        ActionListener updateBalance = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                curBalance.setText("Your current balance is: $" + casino.getPlayerBalance());
+            }
+        };
+
         submitButton.addActionListener(e -> casino.addPlayerBalance((Integer) newBalance.getValue()));
-        submitButton.addActionListener(e -> curBalance.setText("Your current balance is: $"
-                + casino.getPlayerBalance()));
-        balancePanel.add(submitButton);
+        submitButton.addActionListener(updateBalance);
+
+        Timer timer =  new Timer(1, updateBalance);
+        timer.start();
+
         balancePanel.add(newBalance);
+        balancePanel.add(submitButton);
+        balancePanel.add(createHomeButton());
 
         homeContainer.add(balancePanel, "Balance");
     }
@@ -146,5 +170,25 @@ public class CasinoAppFrame extends JFrame {
         buttonFrame.add(loadButton);
         return buttonFrame;
     }
+
+    public JLabel createCenterLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        return label;
+    }
+
+    public void generatePrizeList(JPanel prizePanel) {
+        List<Prize> prizeList = prizeShop.getPrizeList();
+
+        for (int i = 0; i < prizeList.size(); i++) {
+            String threeLines = "Prize #" + (i + 1)
+                    + "\nAnimal Type: " + prizeList.get(i).getAnimalType()
+                    + "\nPrice: " + prizeList.get(i).getValue();
+            JButton button = new JButton("<html>" + threeLines.replaceAll("\\n", "<br>")
+                    + "</html>");
+            prizePanel.add(button);
+        }
+    }
+
 
 }
