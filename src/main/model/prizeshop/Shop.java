@@ -77,6 +77,23 @@ public class Shop implements Writable {
         return purchased;
     }
 
+    // MODIFIES: this, casino
+    // EFFECTS: removes the selected prize from the prize list
+    // deducts the value from the user's casino balance
+    // adds the prize to the user's inventory
+    // returns false if the user does not have enough balance to purchase
+    // returns true if the user successfully purchases the prize
+    public boolean buyPrize(Prize prize) {
+        boolean purchased = false;
+        if (casino.getPlayerBalance() > prize.getValue()) {
+            prizeList.remove(prize);
+            casino.getInventory().add(prize);
+            casino.deductPlayerBalance(prize.getValue());
+            purchased = true;
+        }
+        return purchased;
+    }
+
 
     // REQUIRES: prize is not null
     // MODIFIES: casino

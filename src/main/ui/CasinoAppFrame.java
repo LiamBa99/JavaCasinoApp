@@ -6,6 +6,7 @@ import model.prizeshop.*;
 import model.roulette.*;
 import persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -21,8 +22,11 @@ public class CasinoAppFrame extends JFrame {
 
     private Casino casino;
     private Shop prizeShop;
+    private List<JButton> prizeButtonList;
+    private JPanel inventoryPrizesPanel;
     private static CardLayout homeLayout;
     private static JPanel homeContainer;
+
 
 
     public CasinoAppFrame() {
@@ -56,7 +60,14 @@ public class CasinoAppFrame extends JFrame {
     }
 
     public void setUpInventoryPanel() {
-        JPanel inventoryPanel = new JPanel();
+        JPanel inventoryPanel = new JPanel(new GridLayout(3,1));
+        JLabel inventoryLabel = new JLabel("Here are all the prizes you own!");
+        inventoryLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        inventoryPrizesPanel = new JPanel(new GridLayout(3,3));
+
+        inventoryPanel.add(inventoryLabel);
+        inventoryPanel.add(inventoryPrizesPanel);
         inventoryPanel.add(createHomeButton());
         homeContainer.add(inventoryPanel, "Inventory");
     }
@@ -66,12 +77,15 @@ public class CasinoAppFrame extends JFrame {
         JLabel prizesLabel = new JLabel("Click on the prize you would like to purchase!");
         prizesLabel.setHorizontalAlignment(JLabel.CENTER);
         JPanel prizesPanel = new JPanel(new GridLayout(3,3));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+        buttonPanel.add(createRefreshShopButton());
+        buttonPanel.add(createHomeButton());
 
         generatePrizeList(prizesPanel);
 
         prizesContainer.add(prizesLabel);
         prizesContainer.add(prizesPanel);
-        prizesContainer.add(createHomeButton());
+        prizesContainer.add(buttonPanel);
         homeContainer.add(prizesContainer, "Prizes");
     }
 
@@ -179,15 +193,59 @@ public class CasinoAppFrame extends JFrame {
 
     public void generatePrizeList(JPanel prizePanel) {
         List<Prize> prizeList = prizeShop.getPrizeList();
-
-        for (int i = 0; i < prizeList.size(); i++) {
-            String threeLines = "Prize #" + (i + 1)
-                    + "\nAnimal Type: " + prizeList.get(i).getAnimalType()
-                    + "\nPrice: " + prizeList.get(i).getValue();
+        prizeButtonList = new ArrayList<>();
+        int i = 1;
+        for (Prize prize : prizeList) {
+            String threeLines = "Prize #" + i
+                    + "\nAnimal Type: " + prize.getAnimalType()
+                    + "\nPrice: " + prize.getValue();
             JButton button = new JButton("<html>" + threeLines.replaceAll("\\n", "<br>")
                     + "</html>");
+            button.addActionListener(e -> purchasePrize(button, prize));
+            prizeButtonList.add(button);
             prizePanel.add(button);
+            i++;
         }
+    }
+
+    public void purchasePrize(JButton button, Prize prize) {
+        if (prizeShop.buyPrize(prize)) {
+            button.setText("Purchased");
+            addPrizeToInventory(prize);
+        } else {
+            JOptionPane.showMessageDialog(null, "You don't have enough funds!");
+        }
+    }
+
+    public JButton createRefreshShopButton() {
+        JButton refreshButton = new JButton("Refresh shop");
+        refreshButton.addActionListener(e -> showNewPrizes());
+        return refreshButton;
+    }
+
+    public void showNewPrizes() {
+        prizeShop.generatePrizes();
+        List<Prize> prizeList = prizeShop.getPrizeList();
+        int i = 0;
+        for (JButton button : prizeButtonList) {
+            Prize prize = prizeList.get(i);
+            for (ActionListener al : button.getActionListeners()) {
+                button.removeActionListener(al);
+            }
+            String threeLines = "Prize #" + (i + 1)
+                    + "\nAnimal Type: " + prize.getAnimalType()
+                    + "\nPrice: " + prize.getValue();
+            button.setText("<html>" + threeLines.replaceAll("\\n", "<br>")
+                    + "</html>");
+            button.addActionListener(e -> purchasePrize(button, prize));
+            i++;
+        }
+    }
+
+    public void addPrizeToInventory(Prize prize) {
+        JTextField singlePrize = new JTextField();
+        singlePrize.setText("\nAnimal Type: " + prize.getAnimalType() + "\nPrice: " + prize.getValue());
+        inventoryPrizesPanel.add(singlePrize);
     }
 
 
