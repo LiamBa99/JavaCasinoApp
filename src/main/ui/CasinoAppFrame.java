@@ -22,12 +22,18 @@ public class CasinoAppFrame extends JFrame {
 
     private Casino casino;
     private Shop prizeShop;
+    private BlackjackGame blackjackGame;
+    private BlackjackRound blackjackRound;
+    private CardLayout blackjackLayout;
+    private JPanel dealerHandCards;
+    private JPanel playerHandCards;
+    private JLabel dealerHandValue;
+    private JLabel playerHandValue;
     private List<JButton> prizeButtonList;
     private JPanel inventoryPrizesPanel;
+    private JPanel blackjackContainer;
     private static CardLayout homeLayout;
     private static JPanel homeContainer;
-
-
 
     public CasinoAppFrame() {
         casino = new Casino(0);
@@ -57,6 +63,225 @@ public class CasinoAppFrame extends JFrame {
         setUpBalancePanel();
         setUpPrizesPanel();
         setUpInventoryPanel();
+    }
+
+    public JPanel setUpBlackjackPanel() {
+        blackjackLayout = new CardLayout();
+        blackjackContainer = new JPanel(blackjackLayout);
+        blackjackContainer.add(setUpDeckPanel(), "Decks");
+        blackjackContainer.add(setUpBetPanel(), "Bet");
+        blackjackContainer.add(setUpPlayBlackjackPanel(), "PlayBJ");
+
+        blackjackLayout.show(blackjackContainer, "Decks");
+        return blackjackContainer;
+    }
+
+    public JPanel setUpBlackjackResultsPanel() {
+        JPanel resultsPanel = new JPanel(new GridLayout(4,1));
+        JPanel dealerValuePanel = new JPanel(new GridLayout());
+        JPanel playerValuePanel = new JPanel(new GridLayout());
+        JPanel resultValuePanel = new JPanel();
+        JLabel playerResults = new JLabel();
+        JLabel dealerResults = new JLabel();
+
+        if (blackjackRound.checkWin()) {
+            playerResults.setText("You won! Your cards totaled a value of: " + blackjackRound.getPlayerCardValue());
+            casino.addPlayerBalance(blackjackGame.getCurrentBet());
+        } else {
+            playerResults.setText("You lost! Your cards totaled a value of: "
+                    + blackjackRound.getPlayerCardValue());
+            casino.deductPlayerBalance(blackjackGame.getCurrentBet());
+        }
+        dealerResults.setText("The dealer's cards totaled a value of: " + blackjackRound.getDealerCardValue());
+        resultValuePanel.add(playerResults);
+        resultValuePanel.add(dealerResults);
+        resultsPanel.add(resultValuePanel);
+        resultsPanel.add(dealerValuePanel);
+        resultsPanel.add(playerValuePanel);
+        resultsPanel.add(setUpResultsButtons());
+        return resultsPanel;
+    }
+
+    public JPanel setUpResultsButtons() {
+        JPanel buttonPanel = new JPanel(new GridLayout(1,2));
+        JButton homeButton = createHomeButton();
+        JButton againButton = new JButton("Play again?");
+        againButton.addActionListener(e -> resetBlackjack(true));
+        homeButton.addActionListener(e -> resetBlackjack(false));
+        buttonPanel.add(homeButton);
+        buttonPanel.add(againButton);
+        return buttonPanel;
+    }
+
+    public void resetBlackjack(boolean again) {
+        if (again) {
+            blackjackContainer.removeAll();
+            setUpGamesPanel();
+            homeLayout.show(homeContainer, "Games");
+            blackjackLayout.show(blackjackContainer, "PlayBJ");
+        } else {
+            blackjackContainer.removeAll();
+            setUpGamesPanel();
+        }
+    }
+
+    public JPanel setUpPlayBlackjackPanel() {
+        JPanel playBlackjackPanel = new JPanel(new GridLayout(3,1));
+        JPanel blackjackButtonPanel = new JPanel(new GridLayout(1,3));
+
+        JPanel dealerHandPanel = new JPanel(new GridLayout(3,1));
+        dealerHandPanel.add(new JLabel("Dealer's cards: "));
+
+        JPanel playerHandPanel = new JPanel(new GridLayout(3, 1));
+        playerHandPanel.add(new JLabel("Player's cards: "));
+
+        JButton dealButton = new JButton("Deal!");
+        JButton hitButton = new JButton("Hit!");
+        JButton standButton = new JButton("Stand!");
+
+        dealButton.addActionListener(e -> showFirstCards(dealerHandPanel, playerHandPanel, dealButton));
+        hitButton.addActionListener(e -> dealNextCard());
+        standButton.addActionListener(e -> dealUntilComplete());
+
+        blackjackButtonPanel.add(hitButton);
+        blackjackButtonPanel.add(standButton);
+        blackjackButtonPanel.add(dealButton);
+
+        playBlackjackPanel.add(dealerHandPanel);
+        playBlackjackPanel.add(playerHandPanel);
+        playBlackjackPanel.add(blackjackButtonPanel);
+
+        return playBlackjackPanel;
+    }
+
+    public void dealNextCard() {
+        if (blackjackRound.getPlayerCardValue() == 0) {
+            JOptionPane.showMessageDialog(null, "You must deal cards first!");
+        } else {
+            Card newCard = blackjackRound.dealACard(false);
+            if (blackjackRound.getPlayerCardValue() > 21) {
+                blackjackContainer.add(setUpBlackjackResultsPanel(), "Results");
+                blackjackLayout.show(blackjackContainer, "Results");
+            } else {
+                JLabel newCardLabel = new JLabel(newCard.getCardValue() + "\nof " + newCard.getSuit());
+
+                playerHandCards.add(newCardLabel);
+                playerHandValue.setText("Value: " + blackjackRound.getPlayerCardValue());
+                blackjackLayout.show(blackjackContainer, "Bet");
+                blackjackLayout.show(blackjackContainer, "PlayBJ");
+            }
+        }
+    }
+
+    public void dealUntilComplete() {
+        while (blackjackRound.getDealerCardValue() < 17) {
+            Card nextCard = blackjackRound.dealACard(true);
+            JLabel newCardLabel = new JLabel(nextCard.getCardValue() + "\nof " + nextCard.getSuit());
+            dealerHandCards.add(newCardLabel);
+            dealerHandValue.setText("Value: " + blackjackRound.getDealerCardValue());
+            blackjackLayout.show(blackjackContainer, "Bet");
+            blackjackLayout.show(blackjackContainer, "PlayBJ");
+        }
+        blackjackContainer.add(setUpBlackjackResultsPanel(), "Results");
+        blackjackLayout.show(blackjackContainer, "Results");
+    }
+
+    public void showFirstCards(JPanel dealerHandPanel, JPanel playerHandPanel, JButton dealButton) {
+        dealerHandCards = new JPanel(new GridLayout());
+        playerHandCards = new JPanel(new GridLayout());
+
+        blackjackRound.dealFirstCards();
+        for (Card c : blackjackRound.getDealerHand()) {
+            JLabel dealerCardLabel = new JLabel(c.getCardValue() + "\nof " + c.getSuit());
+            dealerHandCards.add(dealerCardLabel);
+        }
+        dealerHandValue = new JLabel("Value: " + blackjackRound.getDealerCardValue());
+
+        for (Card c : blackjackRound.getPlayerHand()) {
+            JLabel playerCardLabel = new JLabel(c.getCardValue() + "\nof " + c.getSuit());
+            playerHandCards.add(playerCardLabel);
+        }
+        playerHandValue = new JLabel("Value: " + blackjackRound.getPlayerCardValue());
+
+        dealerHandPanel.add(dealerHandCards);
+        dealerHandPanel.add(dealerHandValue);
+        playerHandPanel.add(playerHandCards);
+        playerHandPanel.add(playerHandValue);
+        blackjackLayout.show(blackjackContainer, "Bet");
+        blackjackLayout.show(blackjackContainer, "PlayBJ");
+        for (ActionListener al : dealButton.getActionListeners()) {
+            dealButton.removeActionListener(al);
+        }
+    }
+
+    public JPanel setUpBetPanel() {
+        JPanel blackjackBetPanel = new JPanel(new GridLayout(3,1));
+
+        JLabel numBetQuestion = new JLabel("How much would you like to bet?");
+        numBetQuestion.setHorizontalAlignment(JLabel.CENTER);
+        SpinnerModel value = new SpinnerNumberModel(0,0,null,1);
+        JSpinner numBetField = new JSpinner(value);
+        JButton numBetButton = new JButton("Submit");
+        numBetButton.addActionListener(e -> setBlackjackBet((Integer) numBetField.getValue()));
+
+        blackjackBetPanel.add(numBetQuestion);
+        blackjackBetPanel.add(numBetField);
+        blackjackBetPanel.add(numBetButton);
+
+        return blackjackBetPanel;
+    }
+
+    // TODO: move to logic class
+    public void setBlackjackBet(int curBet) {
+        if (curBet > casino.getPlayerBalance()) {
+            JOptionPane.showMessageDialog(null, "You do not have sufficient balance!");
+        } else if (curBet > 0) {
+            blackjackGame.setCurrentBet(curBet);
+            blackjackRound = new BlackjackRound(blackjackGame);
+            blackjackLayout.show(blackjackContainer, "PlayBJ");
+        } else {
+            JOptionPane.showMessageDialog(null, "That is an invalid bet size!");
+        }
+
+    }
+
+    public JPanel setUpDeckPanel() {
+        JPanel blackjackDeckPanel = new JPanel(new GridLayout(5,1));
+
+        JLabel numDeckQuestion = new JLabel("How many decks would you like to use? Max is 4:");
+        JLabel welcomeLabel = new JLabel("Welcome to blackjack!");
+        SpinnerModel value = new SpinnerNumberModel(0,0,4,1);
+        JSpinner numdeckField = new JSpinner(value);
+        JButton numDeckButton = new JButton("Submit");
+
+        numDeckButton.addActionListener(e -> createBlackJackGame((Integer) numdeckField.getValue()));
+        welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
+        numDeckQuestion.setHorizontalAlignment(JLabel.CENTER);
+
+        blackjackDeckPanel.add(welcomeLabel);
+        blackjackDeckPanel.add(numDeckQuestion);
+        blackjackDeckPanel.add(numdeckField);
+        blackjackDeckPanel.add(numDeckButton);
+        blackjackDeckPanel.add(createHomeButton());
+
+        return blackjackDeckPanel;
+    }
+
+    // TODO: move to logic class
+    public void createBlackJackGame(int numDecks) {
+        if (numDecks <= 4 && numDecks > 0) {
+            blackjackGame = new BlackjackGame(numDecks, casino);
+            blackjackLayout.show(blackjackContainer, "Bet");
+        } else {
+            JOptionPane.showMessageDialog(null, "That is an incorrect number of decks!");
+        }
+    }
+
+    public JPanel setUpRoulettePanel() {
+        CardLayout rouletteLayout = new CardLayout();
+        JPanel roulettePanel = new JPanel(rouletteLayout);
+        roulettePanel.add(new JLabel("Welcome to roulette"));
+        return roulettePanel;
     }
 
     public void setUpInventoryPanel() {
@@ -126,8 +351,7 @@ public class CasinoAppFrame extends JFrame {
         CardLayout gamesLayout = new CardLayout(5,5);
         JPanel gamesContainer = new JPanel(gamesLayout);
 
-        JPanel gamesPanel = new JPanel();
-        gamesPanel.add(createHomeButton());
+        JPanel gamesPanel = new JPanel(new GridLayout(3,1));
         JButton blackjackButton = new JButton("Blackjack!");
         blackjackButton.addActionListener(e -> gamesLayout.show(gamesContainer, "Blackjack"));
         gamesPanel.add(blackjackButton);
@@ -136,12 +360,13 @@ public class CasinoAppFrame extends JFrame {
         rouletteButton.addActionListener(e -> gamesLayout.show(gamesContainer, "Roulette"));
         gamesPanel.add(rouletteButton);
 
-        JPanel blackjackPanel = new JPanel();
-        blackjackPanel.add(new JLabel("Welcome to blackjack"));
+        gamesPanel.add(createHomeButton());
+
+        JPanel blackjackPanel = setUpBlackjackPanel();
+
         gamesContainer.add(blackjackPanel, "Blackjack");
 
-        JPanel roulettePanel = new JPanel();
-        roulettePanel.add(new JLabel("Welcome to roulette"));
+        JPanel roulettePanel = setUpRoulettePanel();
         gamesContainer.add(roulettePanel, "Roulette");
 
         gamesContainer.add(gamesPanel, "Games");
@@ -208,6 +433,7 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // TODO: move to new logic class
     public void purchasePrize(JButton button, Prize prize) {
         if (prizeShop.buyPrize(prize)) {
             button.setText("Purchased");
@@ -242,6 +468,7 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // TODO: move to new logic class
     public void addPrizeToInventory(Prize prize) {
         JTextField singlePrize = new JTextField();
         singlePrize.setText("\nAnimal Type: " + prize.getAnimalType() + "\nPrice: " + prize.getValue());
