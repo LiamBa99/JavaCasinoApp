@@ -4,14 +4,11 @@ import model.blackjack.*;
 import model.casino.*;
 import model.prizeshop.*;
 import model.roulette.*;
-import persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +22,11 @@ public class CasinoAppFrame extends JFrame {
     private BlackjackGame blackjackGame;
     private BlackjackRound blackjackRound;
     private CardLayout blackjackLayout;
+    private RouletteRound rouletteRound;
+    private CardLayout rouletteLayout;
+    private JPanel roulettePanel;
+    private ArrayList<Integer> rouletteSelection;
+    private List<String> rouletteColourSelection;
     private JPanel dealerHandCards;
     private JPanel playerHandCards;
     private JLabel dealerHandValue;
@@ -69,7 +71,7 @@ public class CasinoAppFrame extends JFrame {
         blackjackLayout = new CardLayout();
         blackjackContainer = new JPanel(blackjackLayout);
         blackjackContainer.add(setUpDeckPanel(), "Decks");
-        blackjackContainer.add(setUpBetPanel(), "Bet");
+        blackjackContainer.add(setupBlackjackBetPanel(), "Bet");
         blackjackContainer.add(setUpPlayBlackjackPanel(), "PlayBJ");
 
         blackjackLayout.show(blackjackContainer, "Decks");
@@ -187,6 +189,7 @@ public class CasinoAppFrame extends JFrame {
     }
 
     public void showFirstCards(JPanel dealerHandPanel, JPanel playerHandPanel, JButton dealButton) {
+        blackjackRound = new BlackjackRound(blackjackGame);
         dealerHandCards = new JPanel(new GridLayout());
         playerHandCards = new JPanel(new GridLayout());
 
@@ -214,7 +217,7 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
-    public JPanel setUpBetPanel() {
+    public JPanel setupBlackjackBetPanel() {
         JPanel blackjackBetPanel = new JPanel(new GridLayout(3,1));
 
         JLabel numBetQuestion = new JLabel("How much would you like to bet?");
@@ -222,6 +225,7 @@ public class CasinoAppFrame extends JFrame {
         SpinnerModel value = new SpinnerNumberModel(0,0,null,1);
         JSpinner numBetField = new JSpinner(value);
         JButton numBetButton = new JButton("Submit");
+
         numBetButton.addActionListener(e -> setBlackjackBet((Integer) numBetField.getValue()));
 
         blackjackBetPanel.add(numBetQuestion);
@@ -237,7 +241,6 @@ public class CasinoAppFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "You do not have sufficient balance!");
         } else if (curBet > 0) {
             blackjackGame.setCurrentBet(curBet);
-            blackjackRound = new BlackjackRound(blackjackGame);
             blackjackLayout.show(blackjackContainer, "PlayBJ");
         } else {
             JOptionPane.showMessageDialog(null, "That is an invalid bet size!");
@@ -278,10 +281,175 @@ public class CasinoAppFrame extends JFrame {
     }
 
     public JPanel setUpRoulettePanel() {
-        CardLayout rouletteLayout = new CardLayout();
-        JPanel roulettePanel = new JPanel(rouletteLayout);
-        roulettePanel.add(new JLabel("Welcome to roulette"));
+        rouletteLayout = new CardLayout();
+        roulettePanel = new JPanel(rouletteLayout);
+        rouletteColourSelection = new ArrayList<>();
+        rouletteSelection = new ArrayList<>();
+
+        roulettePanel.add(setUpRouletteWelcomePanel(), "Welcome");
+
+        rouletteLayout.show(roulettePanel, "Welcome");
         return roulettePanel;
+    }
+
+    public void setUpRouletteResultsPanel() {
+        JPanel rouletteResults = new JPanel(new GridLayout(4,1));
+        JPanel buttonPanel = new JPanel(new GridLayout(1,2));
+
+        JButton againButton = new JButton("Play again?");
+        againButton.addActionListener(e -> resetRoulette());
+        buttonPanel.add(createHomeButton());
+        buttonPanel.add(againButton);
+
+        rouletteResults.add(setUpResultSelectionPanel());
+        rouletteResults.add(setUpWinningsPanel());
+        rouletteResults.add(buttonPanel);
+
+        roulettePanel.add(rouletteResults, "Results");
+        rouletteLayout.show(roulettePanel, "Results");
+    }
+
+    public void resetRoulette() {
+        rouletteSelection = new ArrayList<>();
+        rouletteColourSelection = new ArrayList<>();
+        rouletteLayout.show(roulettePanel, "Welcome");
+    }
+
+    public JPanel setUpWinningsPanel() {
+        JPanel winningsPanel = new JPanel(new GridLayout());
+        int numWins = rouletteRound.checkWin();
+        int numBets = rouletteRound.getPlayerSelection().size() + rouletteRound.getPlayerColourEvenSelection().size();
+        int winnings = rouletteRound.getPlayerBet() * numWins * 4;
+        int totalWinnings = winnings - (numBets * rouletteRound.getPlayerBet());
+
+        if (numWins > 0) {
+            JLabel wonLabel = new JLabel("You won " + rouletteRound.checkWin() + " times!");
+            JLabel winningsLabel = new JLabel("Your account has been credited $" + totalWinnings);
+            winningsPanel.add(wonLabel);
+            winningsPanel.add(winningsLabel);
+        } else {
+            JLabel lostLabel = new JLabel("You lost! None of your selections were correct");
+            winningsPanel.add(lostLabel);
+        }
+        if (totalWinnings < 0) {
+            casino.deductPlayerBalance(totalWinnings * -1);
+        } else {
+            casino.addPlayerBalance(totalWinnings);
+        }
+        return winningsPanel;
+    }
+
+    public JPanel setUpResultSelectionPanel() {
+        JPanel resultsPanel = new JPanel(new GridLayout(2,1));
+        JLabel selectedNumberLabel = new JLabel("The selected number was: " + rouletteRound.selectNumber());
+        JPanel playerSelectionPanel = new JPanel(new GridLayout(1,2));
+        if (!rouletteRound.getPlayerSelection().isEmpty()) {
+            JLabel selectedNumbersLabel = new JLabel("You selected the number(s): "
+                    + rouletteRound.getPlayerSelection());
+            playerSelectionPanel.add(selectedNumbersLabel);
+        }
+        if (!rouletteRound.getPlayerColourEvenSelection().isEmpty()) {
+            JLabel selectedColoursLabel = new JLabel("You selected the colours: "
+                    + rouletteRound.getPlayerColourEvenSelection());
+            playerSelectionPanel.add(selectedColoursLabel);
+        }
+        resultsPanel.add(selectedNumberLabel);
+        resultsPanel.add(playerSelectionPanel);
+        return resultsPanel;
+    }
+
+    public JPanel setUpRouletteWelcomePanel() {
+        JPanel betPanel = new JPanel(new GridLayout(5,1));
+
+        JLabel welcomeLabel = new JLabel("Welcome to roulette!");
+        welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        SpinnerModel value = new SpinnerNumberModel(0,0,null,1);
+        JSpinner betSpinner = new JSpinner(value);
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(e -> setRouletteBet(rouletteSelection, (Integer) betSpinner.getValue(),
+                rouletteColourSelection));
+
+        JPanel inputPanel = new JPanel(new GridLayout(1,3));
+        inputPanel.add(setUpRouletteBoardButtons());
+        inputPanel.add(setUpColourSelectionButtons());
+        inputPanel.add(betSpinner);
+
+        betPanel.add(welcomeLabel);
+        betPanel.add(setUpRouletteSelectionLabels());
+        betPanel.add(inputPanel);
+        betPanel.add(submitButton);
+        betPanel.add(createHomeButton());
+
+        return betPanel;
+    }
+
+    public JPanel setUpRouletteSelectionLabels() {
+        JPanel labelPanel = new JPanel(new GridLayout(1,3));
+        JLabel numberSelectionLabel = new JLabel("What numbers would you like to select?");
+        numberSelectionLabel.setHorizontalAlignment(JLabel.CENTER);
+        JLabel colourSelectionLabel = new JLabel("What colour would you like to select?");
+        colourSelectionLabel.setHorizontalAlignment(JLabel.CENTER);
+        JLabel betLabel = new JLabel("How much would you like to bet?");
+        betLabel.setHorizontalAlignment(JLabel.CENTER);
+        labelPanel.add(numberSelectionLabel);
+        labelPanel.add(colourSelectionLabel);
+        labelPanel.add(betLabel);
+        return labelPanel;
+    }
+
+    public JPanel setUpColourSelectionButtons() {
+        JPanel colourButtonPanel = new JPanel(new GridLayout(1,2));
+        JButton redButton = new JButton("Red");
+        redButton.setBackground(Color.RED);
+        redButton.addActionListener(e -> addColourSelection("red"));
+        JButton blackButton = new JButton("Black");
+        blackButton.setBackground(Color.BLACK);
+        blackButton.addActionListener(e -> addColourSelection("black"));
+        colourButtonPanel.add(redButton);
+        colourButtonPanel.add(blackButton);
+        return colourButtonPanel;
+    }
+
+    public void addColourSelection(String colour) {
+        if (!rouletteColourSelection.contains(colour)) {
+            rouletteColourSelection.add(colour);
+        }
+    }
+
+    public JPanel setUpRouletteBoardButtons() {
+        JPanel numberButtons = new JPanel(new GridLayout(6,7));
+        for (int i = 0; i < 36; i++) {
+            JButton boardButton = new JButton(String.valueOf(i));
+            int finalI = i;
+            boardButton.addActionListener(e -> addRouletteNumberSelection(finalI));
+            if ((i % 2) == 0) {
+                boardButton.setBackground(Color.BLACK);
+            } else {
+                boardButton.setBackground(Color.RED);
+            }
+            numberButtons.add(boardButton);
+        }
+        return numberButtons;
+    }
+
+    public void addRouletteNumberSelection(int num) {
+        if (!rouletteSelection.contains(num)) {
+            rouletteSelection.add(num);
+        }
+    }
+
+    public void setRouletteBet(ArrayList<Integer> numberSelectionList, int curBet, List<String> colourSelection) {
+        if (curBet > casino.getPlayerBalance()) {
+            JOptionPane.showMessageDialog(null, "You do not have sufficient balance!");
+        } else if (curBet > 0) {
+            rouletteRound = new RouletteRound(numberSelectionList, curBet, colourSelection);
+            setUpRouletteResultsPanel();
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid bet amount!");
+        }
+
     }
 
     public void setUpInventoryPanel() {
