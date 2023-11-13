@@ -34,6 +34,8 @@ public class CasinoAppFrame extends JFrame {
     private List<JButton> prizeButtonList;
     private JPanel inventoryPrizesPanel;
     private JPanel blackjackContainer;
+    private CardLayout gamesLayout;
+    private JPanel gamesContainer;
     private static CardLayout homeLayout;
     private static JPanel homeContainer;
 
@@ -122,6 +124,7 @@ public class CasinoAppFrame extends JFrame {
             homeLayout.show(homeContainer, "Games");
             blackjackLayout.show(blackjackContainer, "PlayBJ");
         } else {
+            gamesLayout.show(gamesContainer, "Games");
             blackjackContainer.removeAll();
             setUpGamesPanel();
         }
@@ -298,7 +301,9 @@ public class CasinoAppFrame extends JFrame {
 
         JButton againButton = new JButton("Play again?");
         againButton.addActionListener(e -> resetRoulette());
-        buttonPanel.add(createHomeButton());
+        JButton homeButton = createHomeButton();
+        homeButton.addActionListener(e -> gamesLayout.show(gamesContainer, "Games"));
+        buttonPanel.add(homeButton);
         buttonPanel.add(againButton);
 
         rouletteResults.add(setUpResultSelectionPanel());
@@ -516,8 +521,8 @@ public class CasinoAppFrame extends JFrame {
     }
 
     public void setUpGamesPanel() {
-        CardLayout gamesLayout = new CardLayout(5,5);
-        JPanel gamesContainer = new JPanel(gamesLayout);
+        gamesLayout = new CardLayout(5,5);
+        gamesContainer = new JPanel(gamesLayout);
 
         JPanel gamesPanel = new JPanel(new GridLayout(3,1));
         JButton blackjackButton = new JButton("Blackjack!");
