@@ -4,7 +4,12 @@ import model.blackjack.*;
 import model.casino.*;
 import model.prizeshop.*;
 import model.roulette.*;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -17,6 +22,12 @@ public class CasinoAppFrame extends JFrame {
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
 
+    private static final String JSON_CASINO = "./data/casino.json";
+    private static final String JSON_BJ = "./data/blackjack.json";
+    private static final String JSON_PS = "./data/prizeshop.json";
+
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
     private Casino casino;
     private Shop prizeShop;
     private BlackjackGame blackjackGame;
@@ -39,9 +50,12 @@ public class CasinoAppFrame extends JFrame {
     private static CardLayout homeLayout;
     private static JPanel homeContainer;
 
+    // EFFECTS: constructs a casinoAppFrame with a new casino, shop, jsonWriter and reader and a welcome page
     public CasinoAppFrame() {
         casino = new Casino(0);
         prizeShop = new Shop(casino);
+        jsonWriter = new JsonWriter(JSON_CASINO,JSON_BJ,JSON_PS);
+        jsonReader = new JsonReader(JSON_CASINO,JSON_BJ,JSON_PS);
         this.setSize(WIDTH,HEIGHT); // set the size of the frame
         this.setTitle("Welcome to the Casino!"); // set the title of the frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close program when frame closes
@@ -50,6 +64,8 @@ public class CasinoAppFrame extends JFrame {
         this.setVisible(true);
     }
 
+    // MODIFIES: this
+    // EFFECTS: constructs the cardlayout for the casino app, adding the panels, buttons and labels
     public void frameSetUp() {
         homeLayout = new CardLayout(5,5);
         homeContainer = new JPanel(homeLayout);
@@ -62,6 +78,7 @@ public class CasinoAppFrame extends JFrame {
         this.add(homeContainer);
     }
 
+    // EFFECTS: creates four panels that require cardlayouts
     public void panelSetUp() {
         setUpGamesPanel();
         setUpBalancePanel();
@@ -69,6 +86,42 @@ public class CasinoAppFrame extends JFrame {
         setUpInventoryPanel();
     }
 
+    // MODIFIES: this, prizeshop
+    // EFFECTS: loads the casino, prizeshop, inventory and balance data from file.
+    // Displaying popups if an exception is caught or if loaded successfully.
+    public void loadGameState() {
+        if (new File(JSON_CASINO).isFile() && new File(JSON_PS).isFile()) {
+            try {
+                casino = jsonReader.readCasino();
+                prizeShop = jsonReader.readPrizeShop();
+                prizeShop.setCasino(casino);
+                for (Prize prize : casino.getInventory()) {
+                    addPrizeToInventory(prize);
+                }
+                JOptionPane.showMessageDialog(null, "Prizes, balance, and inventory loaded successfully!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Unable to read from file!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No file available!");
+        }
+    }
+
+    // EFFECTS: saves the casino, blackjack, prizeshop and inventory data to file.
+    // displays pop up if saved successfully or if no file is found
+    public void saveGameState() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(casino,blackjackGame,prizeShop);
+            jsonWriter.close();
+            JOptionPane.showMessageDialog(null, "Saved successfully!");
+        } catch (FileNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Unable to save game state!");
+        }
+    }
+
+    // MODIFIES: this
+    // creates the cardlayout panel for the blackjack game and adds the deck, bet and play panels
     public JPanel setUpBlackjackPanel() {
         blackjackLayout = new CardLayout();
         blackjackContainer = new JPanel(blackjackLayout);
@@ -80,6 +133,9 @@ public class CasinoAppFrame extends JFrame {
         return blackjackContainer;
     }
 
+    // MODIFIES: this, casino
+    // EFFECTS: create the results panel for the blackjack game, showing the player what the dealer's cards were
+    // and what the player's cards were.
     public JPanel setUpBlackjackResultsPanel() {
         JPanel resultsPanel = new JPanel(new GridLayout(4,1));
         JPanel dealerValuePanel = new JPanel(new GridLayout());
@@ -106,6 +162,7 @@ public class CasinoAppFrame extends JFrame {
         return resultsPanel;
     }
 
+    // EFFECTS: creates the result buttons to give the player an option to play again or return to the home page
     public JPanel setUpResultsButtons() {
         JPanel buttonPanel = new JPanel(new GridLayout(1,2));
         JButton homeButton = createHomeButton();
@@ -117,6 +174,10 @@ public class CasinoAppFrame extends JFrame {
         return buttonPanel;
     }
 
+    // MODIFIES: this
+    // EFFECTS: if the player wants to play again, remove all frame content from the blackjackcontainer,
+    // recreate the blackjack content and show the play blackjack screen
+    // else remove all content, recreate and show the home page
     public void resetBlackjack(boolean again) {
         if (again) {
             blackjackContainer.removeAll();
@@ -130,6 +191,9 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // EFFECTS: set up play blackjack panel which shows the current dealer's hand and value and the current
+    // dealer's hand and value
+    // creates buttons to allow the player to choose to hit or stand
     public JPanel setUpPlayBlackjackPanel() {
         JPanel playBlackjackPanel = new JPanel(new GridLayout(3,1));
         JPanel blackjackButtonPanel = new JPanel(new GridLayout(1,3));
@@ -159,6 +223,9 @@ public class CasinoAppFrame extends JFrame {
         return playBlackjackPanel;
     }
 
+    // MODIFIES: this, blackjackround
+    // EFFECTS: if the player has no cards, they must deal cards first. else shows the player their next card.
+    // if the players card value is pushed over 21, show the results screen.
     public void dealNextCard() {
         if (blackjackRound.getPlayerCardValue() == 0) {
             JOptionPane.showMessageDialog(null, "You must deal cards first!");
@@ -178,6 +245,8 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // MODIFIES: this, blackjackround
+    // EFFECTS: show the player the final values of the dealer and the player's cards
     public void dealUntilComplete() {
         while (blackjackRound.getDealerCardValue() < 17) {
             Card nextCard = blackjackRound.dealACard(true);
@@ -191,6 +260,8 @@ public class CasinoAppFrame extends JFrame {
         blackjackLayout.show(blackjackContainer, "Results");
     }
 
+    // MODIFIES: this, blackjackround
+    // EFFECTS: show the player's first two cards and the dealer's first card
     public void showFirstCards(JPanel dealerHandPanel, JPanel playerHandPanel, JButton dealButton) {
         blackjackRound = new BlackjackRound(blackjackGame);
         dealerHandCards = new JPanel(new GridLayout());
@@ -220,6 +291,7 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // EFFECTS: creates the blackjack panel allowing the player to input their preferred bet size
     public JPanel setupBlackjackBetPanel() {
         JPanel blackjackBetPanel = new JPanel(new GridLayout(3,1));
 
@@ -238,6 +310,8 @@ public class CasinoAppFrame extends JFrame {
         return blackjackBetPanel;
     }
 
+    // MODIFIES: this, blackjackgame
+    // EFFECTS: sets the blackjack bet for the current blackjackgame
     // TODO: move to logic class
     public void setBlackjackBet(int curBet) {
         if (curBet > casino.getPlayerBalance()) {
@@ -251,6 +325,7 @@ public class CasinoAppFrame extends JFrame {
 
     }
 
+    // EFFECTS: creates a panel that asks the player how many decks they want to use.
     public JPanel setUpDeckPanel() {
         JPanel blackjackDeckPanel = new JPanel(new GridLayout(5,1));
 
@@ -273,6 +348,8 @@ public class CasinoAppFrame extends JFrame {
         return blackjackDeckPanel;
     }
 
+    // MODIFIES: this, blackjackgame
+    // EFFECTS: creates the current blackjackgame according to the selected num of decks
     // TODO: move to logic class
     public void createBlackJackGame(int numDecks) {
         if (numDecks <= 4 && numDecks > 0) {
@@ -283,6 +360,8 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: creates a panel representing the roulette game
     public JPanel setUpRoulettePanel() {
         rouletteLayout = new CardLayout();
         roulettePanel = new JPanel(rouletteLayout);
@@ -295,6 +374,8 @@ public class CasinoAppFrame extends JFrame {
         return roulettePanel;
     }
 
+    // MODIFIES: this
+    // EFFECTS: shows the player the results of the roulette game, including a home and play again button
     public void setUpRouletteResultsPanel() {
         JPanel rouletteResults = new JPanel(new GridLayout(4,1));
         JPanel buttonPanel = new JPanel(new GridLayout(1,2));
@@ -314,12 +395,15 @@ public class CasinoAppFrame extends JFrame {
         rouletteLayout.show(roulettePanel, "Results");
     }
 
+    // MODIFIES: this
+    // EFFECTS: resets the roulette game after it has completed
     public void resetRoulette() {
         rouletteSelection = new ArrayList<>();
         rouletteColourSelection = new ArrayList<>();
         rouletteLayout.show(roulettePanel, "Welcome");
     }
 
+    // EFFECTS: creates a panel representing the amount the player has lost or won in the game of roulette.
     public JPanel setUpWinningsPanel() {
         JPanel winningsPanel = new JPanel(new GridLayout());
         int numWins = rouletteRound.checkWin();
@@ -344,6 +428,8 @@ public class CasinoAppFrame extends JFrame {
         return winningsPanel;
     }
 
+    // MODIFIES: rouletteRound
+    // EFFECTS: shows the player what number was selected and what their choices were
     public JPanel setUpResultSelectionPanel() {
         JPanel resultsPanel = new JPanel(new GridLayout(2,1));
         JLabel selectedNumberLabel = new JLabel("The selected number was: " + rouletteRound.selectNumber());
@@ -363,6 +449,8 @@ public class CasinoAppFrame extends JFrame {
         return resultsPanel;
     }
 
+    // MODIFIES: rouletteround
+    // EFFECTS: creates a panel with buttons representing the required set up conditions for roulette.
     public JPanel setUpRouletteWelcomePanel() {
         JPanel betPanel = new JPanel(new GridLayout(5,1));
 
@@ -390,6 +478,7 @@ public class CasinoAppFrame extends JFrame {
         return betPanel;
     }
 
+    // EFFECTS: creates labels for each of the button panels for the set up of the roulette game
     public JPanel setUpRouletteSelectionLabels() {
         JPanel labelPanel = new JPanel(new GridLayout(1,3));
         JLabel numberSelectionLabel = new JLabel("What numbers would you like to select?");
@@ -404,6 +493,7 @@ public class CasinoAppFrame extends JFrame {
         return labelPanel;
     }
 
+    // EFFECTS: creates the buttons representing the colour selection for the game of roulette
     public JPanel setUpColourSelectionButtons() {
         JPanel colourButtonPanel = new JPanel(new GridLayout(1,2));
         JButton redButton = new JButton("Red");
@@ -417,12 +507,16 @@ public class CasinoAppFrame extends JFrame {
         return colourButtonPanel;
     }
 
+    // MODIFIES: this
+    // EFFECTS; adds the player's selected colour selection if not already present
     public void addColourSelection(String colour) {
         if (!rouletteColourSelection.contains(colour)) {
             rouletteColourSelection.add(colour);
         }
     }
 
+    // EFFECTS: creates the buttons representing each of the possible roulette wheel numbers, with background colour
+    // black if it is even and red if it is odd
     public JPanel setUpRouletteBoardButtons() {
         JPanel numberButtons = new JPanel(new GridLayout(6,7));
         for (int i = 0; i < 36; i++) {
@@ -439,12 +533,16 @@ public class CasinoAppFrame extends JFrame {
         return numberButtons;
     }
 
+    // MODIFIES: this
+    // EFFECTS: adds the roulette number selection
     public void addRouletteNumberSelection(int num) {
         if (!rouletteSelection.contains(num)) {
             rouletteSelection.add(num);
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: if the player has sufficient balance and inputs a valid bet size, creates a new rouletteround
     public void setRouletteBet(ArrayList<Integer> numberSelectionList, int curBet, List<String> colourSelection) {
         if (curBet > casino.getPlayerBalance()) {
             JOptionPane.showMessageDialog(null, "You do not have sufficient balance!");
@@ -457,6 +555,8 @@ public class CasinoAppFrame extends JFrame {
 
     }
 
+    // MODIFIES: this
+    // EFFECTS: creates an inventory panel showing all the prizes owned by the player
     public void setUpInventoryPanel() {
         JPanel inventoryPanel = new JPanel(new GridLayout(3,1));
         JLabel inventoryLabel = new JLabel("Here are all the prizes you own!");
@@ -470,6 +570,9 @@ public class CasinoAppFrame extends JFrame {
         homeContainer.add(inventoryPanel, "Inventory");
     }
 
+    // MODIFIES: this
+    // EFFECTS: creates the prizes panel with the list of prizes available for purchase, a refresh prizes button and a
+    // home button
     public void setUpPrizesPanel() {
         JPanel prizesContainer = new JPanel(new GridLayout(3, 1));
         JLabel prizesLabel = new JLabel("Click on the prize you would like to purchase!");
@@ -487,6 +590,9 @@ public class CasinoAppFrame extends JFrame {
         homeContainer.add(prizesContainer, "Prizes");
     }
 
+    // MODIFIES: this, casino
+    // EFFECTS: shows the player their current balance and a input box for a deposit, which adds the amount to
+    // their balance if submit button is pressed
     public void setUpBalancePanel() {
         JPanel balancePanel = new JPanel(new GridLayout(5,1));
 
@@ -520,6 +626,9 @@ public class CasinoAppFrame extends JFrame {
         homeContainer.add(balancePanel, "Balance");
     }
 
+    // MODIFIES: this
+    // EFFECTS: creates a games panel with a blackjack, roulette, and home button, shows the corresponding
+    // page when selected
     public void setUpGamesPanel() {
         gamesLayout = new CardLayout(5,5);
         gamesContainer = new JPanel(gamesLayout);
@@ -548,12 +657,14 @@ public class CasinoAppFrame extends JFrame {
         homeContainer.add(gamesContainer, "Games");
     }
 
+    // EFFECTS: creates the home button that routes back to the home page when pressed
     public JButton createHomeButton() {
         JButton homeButton = new JButton("Home");
         homeButton.addActionListener(e -> homeLayout.show(homeContainer, "Buttons"));
         return homeButton;
     }
 
+    // EFFECTS: creates the welcome label with 100x50 and center horizontal alignment
     public void createLabel() {
         JLabel label = new JLabel("Welcome to the casino, what would you like to do?");
         label.setPreferredSize(new Dimension(100,50));
@@ -561,6 +672,7 @@ public class CasinoAppFrame extends JFrame {
         homeContainer.add(label);
     }
 
+    // EFFECTS: creates buttons for the home page, games, prizes, balance, inventory, save, and load
     public JPanel createButtons() {
         JPanel buttonFrame = new JPanel();
         buttonFrame.setLayout(new GridLayout(3,3,5,5));
@@ -573,7 +685,9 @@ public class CasinoAppFrame extends JFrame {
         JButton inventoryButton = new JButton("Inventory!");
         inventoryButton.addActionListener(e -> homeLayout.show(homeContainer, "Inventory"));
         JButton saveButton = new JButton("Save!");
+        saveButton.addActionListener(e -> saveGameState());
         JButton loadButton = new JButton("Load!");
+        loadButton.addActionListener(e -> loadGameState());
         buttonFrame.add(gamesButton);
         buttonFrame.add(prizesButton);
         buttonFrame.add(balanceButton);
@@ -583,12 +697,15 @@ public class CasinoAppFrame extends JFrame {
         return buttonFrame;
     }
 
+    // EFFECTS: creates a generic center label with the provided text
     public JLabel createCenterLabel(String text) {
         JLabel label = new JLabel(text);
         label.setHorizontalAlignment(JLabel.CENTER);
         return label;
     }
 
+    // MODIFIES: this
+    // EFFECTS: creates a panel that displays the prizes available in the shop as a button
     public void generatePrizeList(JPanel prizePanel) {
         List<Prize> prizeList = prizeShop.getPrizeList();
         prizeButtonList = new ArrayList<>();
@@ -606,6 +723,8 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // MODIFIES: prizeshop, this
+    // EFFECTS: adds the purchased prize to the displayed inventory and displayed balance
     // TODO: move to new logic class
     public void purchasePrize(JButton button, Prize prize) {
         if (prizeShop.buyPrize(prize)) {
@@ -616,12 +735,15 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // EFFECTS: creates a button that refreshes the shop with new prizes when pressed
     public JButton createRefreshShopButton() {
         JButton refreshButton = new JButton("Refresh shop");
         refreshButton.addActionListener(e -> showNewPrizes());
         return refreshButton;
     }
 
+    // MODIFIES: prizeshop, this
+    // EFFECTS: resets the prize buttons and replaces them with the new prize buttons
     public void showNewPrizes() {
         prizeShop.generatePrizes();
         List<Prize> prizeList = prizeShop.getPrizeList();
@@ -641,6 +763,8 @@ public class CasinoAppFrame extends JFrame {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: adds purchased prize to the display inventory
     // TODO: move to new logic class
     public void addPrizeToInventory(Prize prize) {
         JTextField singlePrize = new JTextField();
