@@ -9,9 +9,16 @@ import persistence.Writable;
 public class Card implements Writable {
     private final int cardValue; // tracks the value of the card
     private final String suit; // tracks the suit of the card
+    private String cardImage; // represents the location of the image representing the card
 
     // REQUIRES: cardValue is in the range 1 - 10 and suit is either "Spade" "Club" "Diamond" or "Heart
     // EFFECTS: cardValue is set to cardValue, suit is set to suit
+    public Card(int cardValue, String suit, String cardImage) {
+        this.cardValue = cardValue;
+        this.suit = suit;
+        this.cardImage = cardImage;
+    }
+
     public Card(int cardValue, String suit) {
         this.cardValue = cardValue;
         this.suit = suit;
@@ -37,4 +44,8 @@ public class Card implements Writable {
         return json;
     }
 
+    // EFFECTS: returns the cards image location
+    public String getCardImage() {
+        return cardImage;
+    }
 }

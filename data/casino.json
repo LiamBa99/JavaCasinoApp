@@ -1,4 +1,50 @@
 {
-    "balance": 0,
-    "inventory": []
+    "balance": 460260,
+    "inventory": [
+        {
+            "index": 2,
+            "type": "Cat",
+            "value": 491
+        },
+        {
+            "index": 5,
+            "type": "Dog",
+            "value": 5676
+        },
+        {
+            "index": 4,
+            "type": "Gerbil",
+            "value": 3757
+        },
+        {
+            "index": 7,
+            "type": "Giraffe",
+            "value": 9668
+        },
+        {
+            "index": 5,
+            "type": "Giraffe",
+            "value": 4393
+        },
+        {
+            "index": 2,
+            "type": "Gerbil",
+            "value": 1520
+        },
+        {
+            "index": 4,
+            "type": "Giraffe",
+            "value": 1110
+        },
+        {
+            "index": 7,
+            "type": "Cat",
+            "value": 4002
+        },
+        {
+            "index": 8,
+            "type": "Gerbil",
+            "value": 9123
+        }
+    ]
 }

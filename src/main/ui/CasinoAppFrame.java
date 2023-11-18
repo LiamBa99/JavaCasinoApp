@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -235,8 +236,7 @@ public class CasinoAppFrame extends JFrame {
                 blackjackContainer.add(setUpBlackjackResultsPanel(), "Results");
                 blackjackLayout.show(blackjackContainer, "Results");
             } else {
-                JLabel newCardLabel = new JLabel(newCard.getCardValue() + "\nof " + newCard.getSuit());
-
+                JLabel newCardLabel = new JLabel(setUpCardImage(newCard));
                 playerHandCards.add(newCardLabel);
                 playerHandValue.setText("Value: " + blackjackRound.getPlayerCardValue());
                 blackjackLayout.show(blackjackContainer, "Bet");
@@ -250,7 +250,7 @@ public class CasinoAppFrame extends JFrame {
     public void dealUntilComplete() {
         while (blackjackRound.getDealerCardValue() < 17) {
             Card nextCard = blackjackRound.dealACard(true);
-            JLabel newCardLabel = new JLabel(nextCard.getCardValue() + "\nof " + nextCard.getSuit());
+            JLabel newCardLabel = new JLabel(setUpCardImage(nextCard));
             dealerHandCards.add(newCardLabel);
             dealerHandValue.setText("Value: " + blackjackRound.getDealerCardValue());
             blackjackLayout.show(blackjackContainer, "Bet");
@@ -260,7 +260,7 @@ public class CasinoAppFrame extends JFrame {
         blackjackLayout.show(blackjackContainer, "Results");
     }
 
-    // MODIFIES: this, blackjackround
+    // MODIFIES: this, blackjackRound
     // EFFECTS: show the player's first two cards and the dealer's first card
     public void showFirstCards(JPanel dealerHandPanel, JPanel playerHandPanel, JButton dealButton) {
         blackjackRound = new BlackjackRound(blackjackGame);
@@ -269,14 +269,14 @@ public class CasinoAppFrame extends JFrame {
 
         blackjackRound.dealFirstCards();
         for (Card c : blackjackRound.getDealerHand()) {
-            JLabel dealerCardLabel = new JLabel(c.getCardValue() + "\nof " + c.getSuit());
-            dealerHandCards.add(dealerCardLabel);
+            JLabel cardLabel = new JLabel(setUpCardImage(c));
+            dealerHandCards.add(cardLabel);
         }
         dealerHandValue = new JLabel("Value: " + blackjackRound.getDealerCardValue());
 
         for (Card c : blackjackRound.getPlayerHand()) {
-            JLabel playerCardLabel = new JLabel(c.getCardValue() + "\nof " + c.getSuit());
-            playerHandCards.add(playerCardLabel);
+            JLabel cardLabel = new JLabel(setUpCardImage(c));
+            playerHandCards.add(cardLabel);
         }
         playerHandValue = new JLabel("Value: " + blackjackRound.getPlayerCardValue());
 
@@ -289,6 +289,16 @@ public class CasinoAppFrame extends JFrame {
         for (ActionListener al : dealButton.getActionListeners()) {
             dealButton.removeActionListener(al);
         }
+    }
+
+    // EFFECTS: creates an image based on the cards image field
+    public ImageIcon setUpCardImage(Card card) {
+        ImageIcon imageIcon = new ImageIcon(card.getCardImage());
+        Image cardImage = imageIcon.getImage();
+        Image smallerImage = cardImage.getScaledInstance(40,60, Image.SCALE_SMOOTH);
+        imageIcon.setImage(smallerImage);
+
+        return imageIcon;
     }
 
     // EFFECTS: creates the blackjack panel allowing the player to input their preferred bet size
@@ -331,7 +341,7 @@ public class CasinoAppFrame extends JFrame {
 
         JLabel numDeckQuestion = new JLabel("How many decks would you like to use? Max is 4:");
         JLabel welcomeLabel = new JLabel("Welcome to blackjack!");
-        SpinnerModel value = new SpinnerNumberModel(0,0,4,1);
+        SpinnerModel value = new SpinnerNumberModel(4,0,4,1);
         JSpinner numdeckField = new JSpinner(value);
         JButton numDeckButton = new JButton("Submit");
 
@@ -558,8 +568,9 @@ public class CasinoAppFrame extends JFrame {
     // MODIFIES: this
     // EFFECTS: creates an inventory panel showing all the prizes owned by the player
     public void setUpInventoryPanel() {
-        JPanel inventoryPanel = new JPanel(new GridLayout(3,1));
+        JPanel inventoryPanel = new JPanel(new GridLayout(4,1));
         JLabel inventoryLabel = new JLabel("Here are all the prizes you own!");
+
         inventoryLabel.setHorizontalAlignment(JLabel.CENTER);
 
         inventoryPrizesPanel = new JPanel(new GridLayout(3,3));
@@ -772,5 +783,38 @@ public class CasinoAppFrame extends JFrame {
         inventoryPrizesPanel.add(singlePrize);
     }
 
+    // EFFECTS: creates a nested list of lists of the card image locations
+    public List<List<String>> setUpCardImageLocationList() {
+        List<String> clubsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_clubs",
+                "./data/images/2_of_clubs", "./data/images/3_of_clubs", "./data/images/4_of_clubs",
+                "./data/images/5_of_clubs", "./data/images/6_of_clubs", "./data/images/7_of_clubs",
+                "./data/images/8_of_clubs", "./data/images/9_of_clubs", "./data/images/10_of_clubs",
+                "./data/images/jack_of_clubs2", "./data/images/queen_of_clubs2", "./data/images/king_of_clubs2"));
+        List<String> diamondsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_diamonds",
+                "./data/images/2_of_diamonds","./data/images/3_of_diamonds","./data/images/4_of_diamonds",
+                "./data/images/5_of_diamonds", "./data/images/6_of_diamonds","./data/images/7_of_diamonds",
+                "./data/images/8_of_diamonds", "./data/images/9_of_diamonds","./data/images/10_of_diamonds",
+                "./data/images/jack_of_diamonds2","./data/images/queen_of_diamonds2",
+                "./data/images/king_of_diamonds2"));
+        List<String> heartsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_hearts",
+                "./data/images/2_of_hearts","./data/images/3_of_hearts","./data/images/4_of_hearts",
+                "./data/images/5_of_hearts", "./data/images/6_of_hearts","./data/images/7_of_hearts",
+                "./data/images/8_of_hearts", "./data/images/9_of_hearts","./data/images/10_of_hearts",
+                "./data/images/jack_of_hearts2","./data/images/queen_of_hearts2","./data/images/king_of_hearts2"));
+        List<List<String>> allCardImageLocations = new ArrayList<>();
+        allCardImageLocations.add(heartsImages);
+        allCardImageLocations.add(diamondsImages);
+        allCardImageLocations.add(clubsImages);
+        allCardImageLocations.add(setUpSpadesImageLocations());
+        return allCardImageLocations;
+    }
 
+    // EFFECTS: creates the spadesImageLocation list
+    public List<String> setUpSpadesImageLocations() {
+        return new ArrayList<>(Arrays.asList("./data/images/ace_of_spades",
+                "./data/images/2_of_spades","./data/images/3_of_spades","./data/images/4_of_spades",
+                "./data/images/5_of_spades", "./data/images/6_of_spades","./data/images/7_of_spades",
+                "./data/images/8_of_spades", "./data/images/9_of_spades","./data/images/10_of_spades",
+                "./data/images/jack_of_spades2","./data/images/queen_of_spades2","./data/images/king_of_spades2"));
+    }
 }
