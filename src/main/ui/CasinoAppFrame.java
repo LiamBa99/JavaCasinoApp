@@ -11,12 +11,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CasinoAppFrame extends JFrame {
@@ -27,8 +25,9 @@ public class CasinoAppFrame extends JFrame {
     private static final String JSON_BJ = "./data/blackjack.json";
     private static final String JSON_PS = "./data/prizeshop.json";
 
-    private JsonWriter jsonWriter;
-    private JsonReader jsonReader;
+    private final JsonWriter jsonWriter;
+    private final JsonReader jsonReader;
+
     private Casino casino;
     private Shop prizeShop;
     private BlackjackGame blackjackGame;
@@ -95,6 +94,8 @@ public class CasinoAppFrame extends JFrame {
             try {
                 casino = jsonReader.readCasino();
                 prizeShop = jsonReader.readPrizeShop();
+                setUpPrizesPanel();
+                setUpInventoryPanel();
                 prizeShop.setCasino(casino);
                 for (Prize prize : casino.getInventory()) {
                     addPrizeToInventory(prize);
@@ -182,6 +183,7 @@ public class CasinoAppFrame extends JFrame {
     public void resetBlackjack(boolean again) {
         if (again) {
             blackjackContainer.removeAll();
+            blackjackRound.setCardValues(0,0);
             setUpGamesPanel();
             homeLayout.show(homeContainer, "Games");
             blackjackLayout.show(blackjackContainer, "PlayBJ");
@@ -322,7 +324,6 @@ public class CasinoAppFrame extends JFrame {
 
     // MODIFIES: this, blackjackgame
     // EFFECTS: sets the blackjack bet for the current blackjackgame
-    // TODO: move to logic class
     public void setBlackjackBet(int curBet) {
         if (curBet > casino.getPlayerBalance()) {
             JOptionPane.showMessageDialog(null, "You do not have sufficient balance!");
@@ -360,7 +361,6 @@ public class CasinoAppFrame extends JFrame {
 
     // MODIFIES: this, blackjackgame
     // EFFECTS: creates the current blackjackgame according to the selected num of decks
-    // TODO: move to logic class
     public void createBlackJackGame(int numDecks) {
         if (numDecks <= 4 && numDecks > 0) {
             blackjackGame = new BlackjackGame(numDecks, casino);
@@ -562,23 +562,90 @@ public class CasinoAppFrame extends JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Invalid bet amount!");
         }
-
     }
 
     // MODIFIES: this
     // EFFECTS: creates an inventory panel showing all the prizes owned by the player
     public void setUpInventoryPanel() {
         JPanel inventoryPanel = new JPanel(new GridLayout(4,1));
-        JLabel inventoryLabel = new JLabel("Here are all the prizes you own!");
+        JLabel inventoryLabel = new JLabel("Here are all the prizes you own!\n Click on any prize to sell it!");
 
         inventoryLabel.setHorizontalAlignment(JLabel.CENTER);
 
         inventoryPrizesPanel = new JPanel(new GridLayout(3,3));
+        JPanel inventorySubsetPanel = new JPanel(new GridLayout(2, 1));
+        JLabel inventorySubsetLabel = new JLabel("Select any of the following buttons to "
+                + "highlight prizes of that type!: ");
+        inventorySubsetLabel.setHorizontalAlignment(JLabel.CENTER);
+        JPanel inventorySubsetButtonPanel = createAnimalTypeButtons();
+        inventorySubsetPanel.add(inventorySubsetLabel);
+        inventorySubsetPanel.add(inventorySubsetButtonPanel);
 
         inventoryPanel.add(inventoryLabel);
         inventoryPanel.add(inventoryPrizesPanel);
+        inventoryPanel.add(inventorySubsetPanel);
         inventoryPanel.add(createHomeButton());
         homeContainer.add(inventoryPanel, "Inventory");
+    }
+
+    // EFFECTS: creates buttons for the subsets of prizes to be viewed
+    public JPanel createAnimalTypeButtons() {
+        JPanel inventorySubsetButtonPanel = new JPanel(new GridLayout(1, 9));
+        createHalfAnimalSubsetButtons(inventorySubsetButtonPanel);
+        createRestAnimalSubsetButtons(inventorySubsetButtonPanel);
+
+        return inventorySubsetButtonPanel;
+    }
+
+    // EFFECTS: creates first half of animal subset buttons with action listeners
+    public void createHalfAnimalSubsetButtons(JPanel inventorySubsetButtonPanel) {
+        JButton elephantButton = new JButton("Elephant");
+        JButton giraffeButton = new JButton("Giraffe");
+        JButton rhinoButton = new JButton("Rhino");
+        JButton trexButton = new JButton("T-Rex");
+        JButton dogButton = new JButton("Dog");
+        elephantButton.addActionListener(e -> showSubsetOfPrizes("Elephant"));
+        giraffeButton.addActionListener(e -> showSubsetOfPrizes("Giraffe"));
+        rhinoButton.addActionListener(e -> showSubsetOfPrizes("Rhino"));
+        trexButton.addActionListener(e -> showSubsetOfPrizes("T-Rex"));
+        dogButton.addActionListener(e -> showSubsetOfPrizes("Dog"));
+        inventorySubsetButtonPanel.add(elephantButton);
+        inventorySubsetButtonPanel.add(giraffeButton);
+        inventorySubsetButtonPanel.add(rhinoButton);
+        inventorySubsetButtonPanel.add(trexButton);
+        inventorySubsetButtonPanel.add(dogButton);
+    }
+
+    // EFFECTS: creates second half of animal subset buttons with action listeners
+    public void createRestAnimalSubsetButtons(JPanel inventorySubsetButtonPanel) {
+        JButton catButton = new JButton("Cat");
+        JButton hamsterButton = new JButton("Hamster");
+        JButton gerbilButton = new JButton("Gerbil");
+        JButton raccoonButton = new JButton("Raccoon");
+        catButton.addActionListener(e -> showSubsetOfPrizes("Cat"));
+        hamsterButton.addActionListener(e -> showSubsetOfPrizes("Hamster"));
+        gerbilButton.addActionListener(e -> showSubsetOfPrizes("Gerbil"));
+        raccoonButton.addActionListener(e -> showSubsetOfPrizes("Raccoon"));
+
+        inventorySubsetButtonPanel.add(catButton);
+        inventorySubsetButtonPanel.add(hamsterButton);
+        inventorySubsetButtonPanel.add(gerbilButton);
+        inventorySubsetButtonPanel.add(raccoonButton);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: highlights the selected subset of prizes in the inventory panel
+    public void showSubsetOfPrizes(String type) {
+        for (Component c : inventoryPrizesPanel.getComponents()) {
+            if (c instanceof JButton) {
+                if (((JButton) c).getText().contains(type)) {
+                    ((JButton) c).setOpaque(true);
+                    c.setBackground(Color.BLUE);
+                }
+            }
+        }
+
+        homeLayout.show(homeContainer, "Inventory");
     }
 
     // MODIFIES: this
@@ -617,12 +684,8 @@ public class CasinoAppFrame extends JFrame {
         JSpinner newBalance = new JSpinner(value);
         JButton submitButton = new JButton("Submit");
 
-        ActionListener updateBalance = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                curBalance.setText("Your current balance is: $" + casino.getPlayerBalance());
-            }
-        };
+        ActionListener updateBalance = e -> curBalance.setText("Your current balance is: $"
+                + casino.getPlayerBalance());
 
         submitButton.addActionListener(e -> casino.addPlayerBalance((Integer) newBalance.getValue()));
         submitButton.addActionListener(updateBalance);
@@ -736,11 +799,13 @@ public class CasinoAppFrame extends JFrame {
 
     // MODIFIES: prizeshop, this
     // EFFECTS: adds the purchased prize to the displayed inventory and displayed balance
-    // TODO: move to new logic class
     public void purchasePrize(JButton button, Prize prize) {
         if (prizeShop.buyPrize(prize)) {
             button.setText("Purchased");
             addPrizeToInventory(prize);
+            for (ActionListener al : button.getActionListeners()) {
+                button.removeActionListener(al);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "You don't have enough funds!");
         }
@@ -776,45 +841,12 @@ public class CasinoAppFrame extends JFrame {
 
     // MODIFIES: this
     // EFFECTS: adds purchased prize to the display inventory
-    // TODO: move to new logic class
     public void addPrizeToInventory(Prize prize) {
-        JTextField singlePrize = new JTextField();
-        singlePrize.setText("\nAnimal Type: " + prize.getAnimalType() + "\nPrice: " + prize.getValue());
+        JButton singlePrize = new JButton();
+        String threeLines = "Animal Type: " + prize.getAnimalType() + "\nPrice: " + prize.getValue();
+        singlePrize.setText("<html>" + threeLines.replaceAll("\\n", "<br>") + "</html>");
+        singlePrize.addActionListener(e -> prizeShop.sellPrize(prize));
+        singlePrize.addActionListener(e -> singlePrize.setText("Sold!"));
         inventoryPrizesPanel.add(singlePrize);
-    }
-
-    // EFFECTS: creates a nested list of lists of the card image locations
-    public List<List<String>> setUpCardImageLocationList() {
-        List<String> clubsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_clubs",
-                "./data/images/2_of_clubs", "./data/images/3_of_clubs", "./data/images/4_of_clubs",
-                "./data/images/5_of_clubs", "./data/images/6_of_clubs", "./data/images/7_of_clubs",
-                "./data/images/8_of_clubs", "./data/images/9_of_clubs", "./data/images/10_of_clubs",
-                "./data/images/jack_of_clubs2", "./data/images/queen_of_clubs2", "./data/images/king_of_clubs2"));
-        List<String> diamondsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_diamonds",
-                "./data/images/2_of_diamonds","./data/images/3_of_diamonds","./data/images/4_of_diamonds",
-                "./data/images/5_of_diamonds", "./data/images/6_of_diamonds","./data/images/7_of_diamonds",
-                "./data/images/8_of_diamonds", "./data/images/9_of_diamonds","./data/images/10_of_diamonds",
-                "./data/images/jack_of_diamonds2","./data/images/queen_of_diamonds2",
-                "./data/images/king_of_diamonds2"));
-        List<String> heartsImages = new ArrayList<>(Arrays.asList("./data/images/ace_of_hearts",
-                "./data/images/2_of_hearts","./data/images/3_of_hearts","./data/images/4_of_hearts",
-                "./data/images/5_of_hearts", "./data/images/6_of_hearts","./data/images/7_of_hearts",
-                "./data/images/8_of_hearts", "./data/images/9_of_hearts","./data/images/10_of_hearts",
-                "./data/images/jack_of_hearts2","./data/images/queen_of_hearts2","./data/images/king_of_hearts2"));
-        List<List<String>> allCardImageLocations = new ArrayList<>();
-        allCardImageLocations.add(heartsImages);
-        allCardImageLocations.add(diamondsImages);
-        allCardImageLocations.add(clubsImages);
-        allCardImageLocations.add(setUpSpadesImageLocations());
-        return allCardImageLocations;
-    }
-
-    // EFFECTS: creates the spadesImageLocation list
-    public List<String> setUpSpadesImageLocations() {
-        return new ArrayList<>(Arrays.asList("./data/images/ace_of_spades",
-                "./data/images/2_of_spades","./data/images/3_of_spades","./data/images/4_of_spades",
-                "./data/images/5_of_spades", "./data/images/6_of_spades","./data/images/7_of_spades",
-                "./data/images/8_of_spades", "./data/images/9_of_spades","./data/images/10_of_spades",
-                "./data/images/jack_of_spades2","./data/images/queen_of_spades2","./data/images/king_of_spades2"));
     }
 }

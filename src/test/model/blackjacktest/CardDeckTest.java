@@ -46,4 +46,11 @@ class CardDeckTest {
             }
         }
     }
+
+    @Test
+    void testCardImage() {
+        List<Card> testDeck = testCardDeck.getCardDeck();
+        Card card = testDeck.get(0);
+        assertEquals("./data/images/ace_of_hearts.png",card.getCardImage());
+    }
 }

@@ -68,6 +68,26 @@ public class ShopTest {
     }
 
     @Test
+    void testBuyPrizePrize() {
+        int oldBalance = casinoTest.getPlayerBalance();
+        shopTest.generatePrizes();
+        assertEquals(9,shopTest.getPrizeList().size());
+        Prize prize = shopTest.getPrizeList().get(0);
+
+        casinoTest.deductPlayerBalance(10000);
+        assertFalse(shopTest.buyPrize(prize));
+
+        casinoTest.addPlayerBalance(10000);
+        assertTrue(shopTest.buyPrize(prize));
+        Prize purchasedPrize = casinoTest.getInventory().get(0);
+        assertEquals(8,shopTest.getPrizeList().size());
+
+        assertEquals(purchasedPrize,prize);
+
+        assertEquals(casinoTest.getPlayerBalance(),oldBalance - purchasedPrize.getValue());
+    }
+
+    @Test
     void testSellPrize() {
         int oldBalance = casinoTest.getPlayerBalance();
         shopTest.generatePrizes();
