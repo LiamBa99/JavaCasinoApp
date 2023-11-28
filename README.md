@@ -122,6 +122,7 @@ into why that is the case.
   - observe your previously purchased prizes are present
 
 ## Phase 4: Task 2
+Purchasing prizes:
 - Mon Nov 27 17:41:07 PST 2023
 - Prize added to inventory.
 - Mon Nov 27 17:41:07 PST 2023
@@ -130,6 +131,8 @@ into why that is the case.
 - Prize added to inventory.
 - Mon Nov 27 17:41:08 PST 2023
 - Prize added to inventory.
+
+Sorting by animal type:
 - Mon Nov 27 17:41:11 PST 2023
 - Prize subset created.
 - Mon Nov 27 17:41:11 PST 2023
@@ -142,6 +145,8 @@ into why that is the case.
 - Prize added to subset.
 - Mon Nov 27 17:41:14 PST 2023
 - Prize added to subset.
+
+Selling Prizes:
 - Mon Nov 27 17:41:14 PST 2023
 - Prize removed from inventory and value added to balance.
 - Mon Nov 27 17:41:15 PST 2023
@@ -150,3 +155,14 @@ into why that is the case.
 - Prize removed from inventory and value added to balance.
 - Mon Nov 27 17:41:15 PST 2023
 - Prize removed from inventory and value added to balance.
+
+## Phase 4: Task 3
+
+If I had more time to work on this project I would refactor my CasinoAppFrame 
+to only have a single instance of CasinoApp. Essentially in the programs current state
+CasinoApp is the console version of the program and CasinoAppFrame is the GUI version
+of the program. By refactoring I would change CasinoApp to handle all the connections to
+the other classes and utilize the output values of CasinoApp's methods to display the information in
+CasinoAppFrame. The set-up is similar to the program now but would greatly reduce the amount of lines
+in CasinoAppFrame. 
+

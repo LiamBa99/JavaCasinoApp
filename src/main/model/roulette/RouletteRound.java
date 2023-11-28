@@ -1,7 +1,5 @@
 package model.roulette;
 
-import model.CasinoGame;
-
 import java.util.*;
 
 // represents a round of Roulette, with the player bets, player selections and a roulette board where
@@ -9,7 +7,7 @@ import java.util.*;
 // 00 is represented by the first 0 in the array
 // even numbers have the colour red associated
 // ood numbers have the colour black associated
-public class RouletteRound implements CasinoGame {
+public class RouletteRound {
     private final ArrayList<Integer> playerSelection; // represents the players selected numbers
     private final List<String> playerColourEvenSelection; // represents the players colour choice
     private int selectedNumber; // represents the winning number
