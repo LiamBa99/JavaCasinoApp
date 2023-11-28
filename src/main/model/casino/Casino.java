@@ -2,6 +2,8 @@ package model.casino;
 
 import java.util.*;
 
+import model.event.Event;
+import model.event.EventLog;
 import model.prizeshop.*;
 import org.json.*;
 import persistence.Writable;
@@ -78,6 +80,7 @@ public class Casino implements Writable {
     // returns true if successfully removed, false otherwise
     public boolean removePrize(Prize prize) {
         if (inventory.contains(prize)) {
+            EventLog.getInstance().logEvent(new Event("Prize removed from inventory."));
             inventory.remove(prize);
         } else {
             return false;
@@ -88,5 +91,18 @@ public class Casino implements Writable {
     // EFFECTS: returns the prize list
     public ArrayList<Prize> getInventory() {
         return inventory;
+    }
+
+    // EFFECTS: creates an inventory subset according to the input type
+    public ArrayList<Prize> createInventorySubset(String type) {
+        ArrayList<Prize> inventorySubset = new ArrayList<>();
+        EventLog.getInstance().logEvent(new Event("Prize subset created."));
+        for (Prize p : inventory) {
+            if (p.getAnimalType().equals(type)) {
+                EventLog.getInstance().logEvent(new Event("Prize added to subset."));
+                inventorySubset.add(p);
+            }
+        }
+        return inventorySubset;
     }
 }

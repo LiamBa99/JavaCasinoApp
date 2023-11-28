@@ -2,15 +2,20 @@ package ui;
 
 import model.blackjack.*;
 import model.casino.*;
+import model.event.Event;
+import model.event.EventLog;
 import model.prizeshop.*;
 import model.roulette.*;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -27,13 +32,13 @@ public class CasinoAppFrame extends JFrame {
 
     private final JsonWriter jsonWriter;
     private final JsonReader jsonReader;
-
     private Casino casino;
     private Shop prizeShop;
     private BlackjackGame blackjackGame;
     private BlackjackRound blackjackRound;
-    private CardLayout blackjackLayout;
     private RouletteRound rouletteRound;
+
+    private CardLayout blackjackLayout;
     private CardLayout rouletteLayout;
     private JPanel roulettePanel;
     private ArrayList<Integer> rouletteSelection;
@@ -58,8 +63,18 @@ public class CasinoAppFrame extends JFrame {
         jsonReader = new JsonReader(JSON_CASINO,JSON_BJ,JSON_PS);
         this.setSize(WIDTH,HEIGHT); // set the size of the frame
         this.setTitle("Welcome to the Casino!"); // set the title of the frame
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close program when frame closes
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // close program when frame closes
         this.setResizable(false); // stop the frame from being resized
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Iterator<Event> eventIterator = EventLog.getInstance().iterator();
+                while (eventIterator.hasNext()) {
+                    System.out.println(eventIterator.next().toString());
+                }
+                System.exit(0);
+            }
+        });
         frameSetUp();
         this.setVisible(true);
     }
@@ -636,6 +651,7 @@ public class CasinoAppFrame extends JFrame {
     // MODIFIES: this
     // EFFECTS: highlights the selected subset of prizes in the inventory panel
     public void showSubsetOfPrizes(String type) {
+        casino.createInventorySubset(type);
         for (Component c : inventoryPrizesPanel.getComponents()) {
             if (c instanceof JButton) {
                 if (((JButton) c).getText().contains(type)) {

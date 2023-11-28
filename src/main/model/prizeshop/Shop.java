@@ -2,6 +2,8 @@ package model.prizeshop;
 
 import java.util.*;
 import model.casino.Casino;
+import model.event.Event;
+import model.event.EventLog;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.Writable;
@@ -89,6 +91,7 @@ public class Shop implements Writable {
             prizeList.remove(prize);
             casino.getInventory().add(prize);
             casino.deductPlayerBalance(prize.getValue());
+            EventLog.getInstance().logEvent(new Event("Prize added to inventory."));
             purchased = true;
         }
         return purchased;
@@ -102,6 +105,7 @@ public class Shop implements Writable {
     public void sellPrize(Prize prize) {
         int prizeIndex = casino.getInventory().indexOf(prize);
         Prize prizeToSell = casino.getInventory().remove(prizeIndex);
+        EventLog.getInstance().logEvent(new Event("Prize removed from inventory and value added to balance."));
         casino.addPlayerBalance(prizeToSell.getValue());
     }
 

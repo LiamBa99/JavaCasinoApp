@@ -120,3 +120,33 @@ into why that is the case.
   - press the home button
   - press the inventory button
   - observe your previously purchased prizes are present
+
+## Phase 4: Task 2
+- Mon Nov 27 17:41:07 PST 2023
+- Prize added to inventory.
+- Mon Nov 27 17:41:07 PST 2023
+- Prize added to inventory.
+- Mon Nov 27 17:41:08 PST 2023
+- Prize added to inventory.
+- Mon Nov 27 17:41:08 PST 2023
+- Prize added to inventory.
+- Mon Nov 27 17:41:11 PST 2023
+- Prize subset created.
+- Mon Nov 27 17:41:11 PST 2023
+- Prize added to subset.
+- Mon Nov 27 17:41:11 PST 2023
+- Prize added to subset.
+- Mon Nov 27 17:41:14 PST 2023
+- Prize subset created.
+- Mon Nov 27 17:41:14 PST 2023
+- Prize added to subset.
+- Mon Nov 27 17:41:14 PST 2023
+- Prize added to subset.
+- Mon Nov 27 17:41:14 PST 2023
+- Prize removed from inventory and value added to balance.
+- Mon Nov 27 17:41:15 PST 2023
+- Prize removed from inventory and value added to balance.
+- Mon Nov 27 17:41:15 PST 2023
+- Prize removed from inventory and value added to balance.
+- Mon Nov 27 17:41:15 PST 2023
+- Prize removed from inventory and value added to balance.
